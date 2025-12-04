@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İngilizce Final Testi</title>
+<style>
+    :root {
+        --bg: #f0f2f5;
+        --card: #ffffff;
+        --text: #1f2937;
+        --primary: #3b82f6;
+        --correct-bg: #d1fae5; --correct-text: #065f46;
+        --wrong-bg: #fee2e2; --wrong-text: #991b1b;
+    }
+
+    body.dark-mode {
+        --bg: #111827;
+        --card: #1f2937;
+        --text: #f9fafb;
+        --primary: #60a5fa;
+        --correct-bg: #064e3b; --correct-text: #6ee7b7;
+        --wrong-bg: #7f1d1d; --wrong-text: #fca5a5;
+    }
+
+    body {
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        transition: 0.3s;
+        padding: 10px;
+    }
+
+    .container {
+        background: var(--card);
+        width: 100%;
+        max-width: 500px;
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        text-align: center;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-height: 500px;
+    }
+
+    /* ÜST BAR (Header) */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .stats {
+        font-weight: bold;
+        font-size: 1.1rem;
+        display: flex;
+        gap: 15px;
+    }
+    
+    /* KARANLIK MOD SÜRGÜSÜ (Toggle Switch) */
+    .theme-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 26px;
+    }
+    .theme-switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "☀️";
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        height: 20px;
+        width: 20px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before {
+        transform: translateX(24px);
+        content: "🌙";
+    }
+
+    /* GİRİŞ EKRANI */
+    .input-box {
+        padding: 14px;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        width: 80%;
+        font-size: 1rem;
+        text-align: center;
+        margin-bottom: 25px;
+        background: transparent;
+        color: var(--text);
+        outline: none;
+    }
+    .input-box:focus { border-color: var(--primary); }
+
+    .btn-grid { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    
+    button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+    
+    .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+    .btn-outline:hover { background: var(--primary); color: white; }
+    
+    .btn-primary { background: var(--primary); color: white; width: 100%; margin-top: 15px; }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
+
+    /* SORU ALANI */
+    .content { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+    
+    .question {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 25px;
+        line-height: 1.4;
+    }
+
+    .options { display: grid; gap: 12px; }
+
+    .opt-btn {
+        background: var(--bg);
+        border: 2px solid transparent;
+        color: var(--text);
+        padding: 15px;
+        text-align: left;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: 0.2s;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary); filter: brightness(0.95); }
+
+    .correct { background: var(--correct-bg) !important; color: var(--correct-text) !important; border-color: var(--correct-text) !important; }
+    .wrong { background: var(--wrong-bg) !important; color: var(--wrong-text) !important; border-color: var(--wrong-text) !important; }
+
+    /* ALT KISIM (İlerleme ve Buton) */
+    .footer { margin-top: 20px; }
+    
+    .progress-text {
+        margin-top: 15px;
+        font-size: 0.9rem;
+        color: var(--text);
+        opacity: 0.7;
+    }
+
+    .hidden { display: none !important; }
+    
+    /* Sonuç Ekranı */
+    .score-big { font-size: 3.5rem; font-weight: bold; color: var(--primary); margin: 20px 0; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="header">
+        <div class="stats" id="stats-area" style="visibility: hidden;">
+            <span style="color: #10b981;">✅ <span id="count-correct">0</span></span>
+            <span style="color: #ef4444;">❌ <span id="count-wrong">0</span></span>
+        </div>
+        
+        <label class="theme-switch">
+            <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div id="start-screen" class="content">
+        <h1 style="color: var(--primary); margin-bottom:10px;">English Quiz</h1>
+        <p style="margin-bottom:30px; opacity:0.7;">Seviye: Zor | Karışık Konular</p>
+        
+        <input type="text" id="username" class="input-box" placeholder="Anonim nickname belirle (opsiyonel)" maxlength="15">
+        
+        <p style="margin-bottom:15px;">Soru Sayısı Seç:</p>
+        <div class="btn-grid">
+            <button class="btn-outline" onclick="startGame(25)">25</button>
+            <button class="btn-outline" onclick="startGame(50)">50</button>
+            <button class="btn-outline" onclick="startGame(100)">100</button>
+        </div>
+    </div>
+
+    <div id="quiz-screen" class="content hidden">
+        <div id="question-text" class="question">Soru yükleniyor...</div>
+        <div id="options-area" class="options"></div>
+        
+        <div class="footer">
+            <button id="next-btn" class="btn-primary" style="display:none;" onclick="nextQuestion()">Sonraki Soru ➜</button>
+            <div id="progress" class="progress-text">1 / 25</div>
+        </div>
+    </div>
+
+    <div id="result-screen" class="content hidden">
+        <h2>Test Bitti!</h2>
+        <div class="score-big">
+            <span id="final-correct">0</span> / <span id="total-q">0</span>
+        </div>
+        <p id="feedback-msg"></p>
+        <button class="btn-primary" onclick="location.reload()">Tekrar Dene</button>
+    </div>
+
+</div>
+
+<script>
+// 100 SORULUK HAVUZ
+const allQuestions = [
+    {q: "My brother usually ______ up early.", o: ["gets", "get", "getting", "is get"], a: 0},
+    {q: "______ your parents go to the cinema?", o: ["Do", "Does", "Are", "Is"], a: 0},
+    {q: "I ______ agree with you.", o: ["don't", "am not", "doesn't", "not"], a: 0},
+    {q: "Where ______ your best friend live?", o: ["does", "do", "is", "are"], a: 0},
+    {q: "She ______ a big house.", o: ["hasn't got", "haven't got", "isn't got", "don't got"], a: 0},
+    {q: "______ your uncle got a car?", o: ["Has", "Have", "Do", "Is"], a: 0},
+    {q: "My father's sister is my ______.", o: ["aunt", "uncle", "cousin", "niece"], a: 0},
+    {q: "Look! There ______ three cats.", o: ["are", "is", "was", "be"], a: 0},
+    {q: "There ______ any milk in the fridge.", o: ["isn't", "aren't", "not", "no"], a: 0},
+    {q: "The bank is ______ the post office.", o: ["next to", "between", "in", "on"], a: 0},
+    {q: "I ______ speak French very well.", o: ["can", "do", "am", "have"], a: 0},
+    {q: "______ you help me?", o: ["Can", "Do", "Are", "Have"], a: 0},
+    {q: "I want ______ water.", o: ["some", "a", "many", "any"], a: 0},
+    {q: "______ money do you have?", o: ["How much", "How many", "How", "What"], a: 0},
+    {q: "I ______ at home yesterday.", o: ["was", "were", "am", "did"], a: 0},
+    {q: "We ______ to the cinema last night.", o: ["went", "go", "gone", "going"], a: 0},
+    {q: "She ______ see me yesterday.", o: ["didn't", "doesn't", "don't", "wasn't"], a: 0},
+    {q: "______ you buy the bread?", o: ["Did", "Do", "Were", "Are"], a: 0},
+    {q: "My mother ______ a teacher.", o: ["is", "are", "am", "be"], a: 0},
+    {q: "They ______ football on Sundays.", o: ["play", "plays", "playing", "played"], a: 0},
+    {q: "He ______ (not / like) fish.", o: ["doesn't like", "don't like", "isn't like", "not like"], a: 0},
+    {q: "______ you got a sister?", o: ["Have", "Has", "Do", "Are"], a: 0},
+    {q: "She ______ TV now.", o: ["is watching", "watches", "watch", "watched"], a: 0},
+    {q: "We ______ dinner at the moment.", o: ["are having", "have", "had", "having"], a: 0},
+    {q: "The cat is ______ the table. (Altında)", o: ["under", "on", "in", "next to"], a: 0},
+    {q: "What time ______ it?", o: ["is", "are", "does", "has"], a: 0},
+    {q: "______ a pen on the desk.", o: ["There is", "There are", "They are", "It is"], a: 0},
+    {q: "She ______ to work by bus.", o: ["goes", "go", "going", "gone"], a: 0},
+    {q: "I ______ (study) English now.", o: ["am studying", "study", "studying", "studied"], a: 0},
+    {q: "They ______ (live) in London.", o: ["live", "lives", "living", "lived"], a: 0},
+    {q: "We ______ (not / go) out last night.", o: ["didn't go", "don't go", "wasn't go", "didn't went"], a: 0},
+    {q: "______ she ______ (know) him?", o: ["Does / know", "Do / know", "Is / know", "Has / known"], a: 0},
+    {q: "I ______ (read) a book yesterday.", o: ["read", "readed", "reading", "reads"], a: 0},
+    {q: "He ______ (buy) a new car.", o: ["bought", "buyed", "buys", "buying"], a: 0},
+    {q: "They ______ (be) at school yesterday.", o: ["were", "was", "are", "did"], a: 0},
+    {q: "______ you ______ (see) the film?", o: ["Did / see", "Do / see", "Were / saw", "Did / saw"], a: 0},
+    {q: "I ______ (not / like) coffee.", o: ["don't like", "doesn't like", "not like", "no like"], a: 0},
+    {q: "She ______ (play) tennis every day.", o: ["plays", "play", "playing", "played"], a: 0},
+    {q: "We ______ (watch) a movie now.", o: ["are watching", "watch", "watching", "watched"], a: 0},
+    {q: "He ______ (sleep) at the moment.", o: ["is sleeping", "sleeps", "sleeping", "slept"], a: 0},
+    {q: "______ they ______ (come) tomorrow?", o: ["Are / coming", "Do / come", "Did / come", "Have / come"], a: 0},
+    {q: "I ______ (visit) my aunt next week.", o: ["am visiting", "visit", "visited", "visiting"], a: 0},
+    {q: "She ______ (not / work) on Sundays.", o: ["doesn't work", "don't work", "isn't work", "not work"], a: 0},
+    {q: "______ you ______ (speak) English?", o: ["Do / speak", "Are / speak", "Does / speak", "Is / speak"], a: 0},
+    {q: "Where ______ you ______ (go)?", o: ["are / going", "do / go", "did / go", "have / gone"], a: 0},
+    {q: "What ______ you ______ (do)?", o: ["are / doing", "do / do", "did / do", "have / done"], a: 0},
+    {q: "Why ______ she ______ (cry)?", o: ["is / crying", "does / cry", "did / cry", "has / cried"], a: 0},
+    {q: "When ______ they ______ (arrive)?", o: ["did / arrive", "do / arrive", "are / arrive", "have / arrived"], a: 0},
+    {q: "Who ______ (break) the window?", o: ["broke", "breaked", "breaking", "breaks"], a: 0},
+    {q: "How ______ you ______ (feel)?", o: ["do / feel", "are / feel", "did / feel", "have / felt"], a: 0},
+    {q: "I ______ (have) breakfast at 7.", o: ["have", "has", "having", "had"], a: 0},
+    {q: "She ______ (go) to school by bus.", o: ["goes", "go", "going", "gone"], a: 0},
+    {q: "He ______ (play) football well.", o: ["plays", "play", "playing", "played"], a: 0},
+    {q: "We ______ (live) in a big house.", o: ["live", "lives", "living", "lived"], a: 0},
+    {q: "They ______ (study) hard.", o: ["study", "studies", "studying", "studied"], a: 0},
+    {q: "I ______ (not / eat) meat.", o: ["don't eat", "doesn't eat", "not eat", "no eat"], a: 0},
+    {q: "She ______ (not / drink) tea.", o: ["doesn't drink", "don't drink", "isn't drink", "not drink"], a: 0},
+    {q: "We ______ (not / watch) TV.", o: ["don't watch", "doesn't watch", "not watch", "no watch"], a: 0},
+    {q: "They ______ (not / play) games.", o: ["don't play", "doesn't play", "not play", "no play"], a: 0},
+    {q: "He ______ (not / smoke).", o: ["doesn't smoke", "don't smoke", "isn't smoke", "not smoke"], a: 0},
+    {q: "______ you ______ (like) ice cream?", o: ["Do / like", "Does / like", "Are / like", "Is / like"], a: 0},
+    {q: "______ she ______ (love) him?", o: ["Does / love", "Do / love", "Is / love", "Has / loved"], a: 0},
+    {q: "______ they ______ (know) the answer?", o: ["Do / know", "Does / know", "Are / know", "Is / know"], a: 0},
+    {q: "______ we ______ (need) help?", o: ["Do / need", "Does / need", "Are / need", "Is / need"], a: 0},
+    {q: "______ he ______ (want) a car?", o: ["Does / want", "Do / want", "Is / want", "Has / wanted"], a: 0},
+    {q: "I ______ (be) happy.", o: ["am", "is", "are", "be"], a: 0},
+    {q: "She ______ (be) sad.", o: ["is", "am", "are", "be"], a: 0},
+    {q: "We ______ (be) tired.", o: ["are", "is", "am", "be"], a: 0},
+    {q: "They ______ (be) angry.", o: ["are", "is", "am", "be"], a: 0},
+    {q: "He ______ (be) busy.", o: ["is", "am", "are", "be"], a: 0},
+    {q: "I ______ (be) at home.", o: ["was", "were", "am", "be"], a: 0},
+    {q: "She ______ (be) at school.", o: ["was", "were", "is", "be"], a: 0},
+    {q: "We ______ (be) at the park.", o: ["were", "was", "are", "be"], a: 0},
+    {q: "They ______ (be) at the party.", o: ["were", "was", "are", "be"], a: 0},
+    {q: "He ______ (be) at work.", o: ["was", "were", "is", "be"], a: 0},
+    {q: "I ______ (do) my homework.", o: ["did", "do", "doing", "done"], a: 0},
+    {q: "She ______ (make) a cake.", o: ["made", "make", "making", "makes"], a: 0},
+    {q: "We ______ (go) to the beach.", o: ["went", "go", "going", "gone"], a: 0},
+    {q: "They ______ (see) a movie.", o: ["saw", "see", "seeing", "seen"], a: 0},
+    {q: "He ______ (take) a taxi.", o: ["took", "take", "taking", "taken"], a: 0},
+    {q: "I ______ (give) him a gift.", o: ["gave", "give", "giving", "given"], a: 0},
+    {q: "She ______ (write) a letter.", o: ["wrote", "write", "writing", "written"], a: 0},
+    {q: "We ______ (read) a book.", o: ["read", "readed", "reading", "reads"], a: 0},
+    {q: "They ______ (eat) pizza.", o: ["ate", "eat", "eating", "eaten"], a: 0},
+    {q: "He ______ (drink) water.", o: ["drank", "drink", "drinking", "drunk"], a: 0},
+    {q: "I ______ (run) in the park.", o: ["ran", "run", "running", "runs"], a: 0},
+    {q: "She ______ (swim) in the pool.", o: ["swam", "swim", "swimming", "swum"], a: 0},
+    {q: "We ______ (sing) a song.", o: ["sang", "sing", "singing", "sung"], a: 0},
+    {q: "They ______ (dance) all night.", o: ["danced", "dance", "dancing", "dances"], a: 0},
+    {q: "He ______ (sleep) well.", o: ["slept", "sleep", "sleeping", "sleeps"], a: 0},
+    {q: "I ______ (wake) up early.", o: ["woke", "wake", "waking", "woken"], a: 0},
+    {q: "She ______ (get) up late.", o: ["got", "get", "getting", "gotten"], a: 0},
+    {q: "We ______ (wash) the car.", o: ["washed", "wash", "washing", "washes"], a: 0},
+    {q: "They ______ (clean) the house.", o: ["cleaned", "clean", "cleaning", "cleans"], a: 0},
+    {q: "He ______ (fix) the bike.", o: ["fixed", "fix", "fixing", "fixes"], a: 0},
+    {q: "I ______ (cook) dinner.", o: ["cooked", "cook", "cooking", "cooks"], a: 0},
+    {q: "She ______ (bake) bread.", o: ["baked", "bake", "baking", "bakes"], a: 0},
+    {q: "We ______ (buy) food.", o: ["bought", "buy", "buying", "buys"], a: 0},
+    {q: "They ______ (sell) books.", o: ["sold", "sell", "selling", "sells"], a: 0}
+];
+
+let gameQs = [], currentIdx = 0;
+let correctCount = 0, wrongCount = 0;
+
+function startGame(count) {
+    // İsim kontrolü (Boşsa Anonim)
+    let name = document.getElementById("username").value.trim();
+    if (!name) name = "Anonim";
+    
+    // Soruları karıştır ve seç
+    gameQs = [...allQuestions].sort(() => 0.5 - Math.random()).slice(0, count);
+    
+    // Ekranı değiştir
+    document.getElementById("start-screen").classList.add("hidden");
+    document.getElementById("quiz-screen").classList.remove("hidden");
+    document.getElementById("stats-area").style.visibility = "visible";
+    
+    // Sıfırla
+    currentIdx = 0;
+    correctCount = 0;
+    wrongCount = 0;
+    updateStats();
+    showQuestion();
+}
+
+function showQuestion() {
+    let q = gameQs[currentIdx];
+    
+    // İlerleme metnini (2/25) güncelle
+    document.getElementById("progress").innerText = `${currentIdx + 1} / ${gameQs.length}`;
+    
+    document.getElementById("question-text").innerText = `${currentIdx + 1}. ${q.q}`;
+    
+    let area = document.getElementById("options-area");
+    area.innerHTML = "";
+    document.getElementById("next-btn").style.display = "none";
+    
+    q.o.forEach((opt, idx) => {
+        let btn = document.createElement("button");
+        btn.className = "opt-btn";
+        btn.innerText = opt;
+        btn.onclick = () => checkAnswer(btn, idx, q.a);
+        area.appendChild(btn);
+    });
+}
+
+function checkAnswer(btn, idx, correct) {
+    let btns = document.querySelectorAll(".opt-btn");
+    btns.forEach(b => b.disabled = true);
+    
+    if(idx === correct) {
+        btn.classList.add("correct");
+        correctCount++;
+    } else {
+        btn.classList.add("wrong");
+        btns[correct].classList.add("correct");
+        wrongCount++;
+    }
+    
+    updateStats();
+    document.getElementById("next-btn").style.display = "block";
+}
+
+function updateStats() {
+    document.getElementById("count-correct").innerText = correctCount;
+    document.getElementById("count-wrong").innerText = wrongCount;
+}
+
+function nextQuestion() {
+    currentIdx++;
+    if(currentIdx < gameQs.length) {
+        showQuestion();
+    } else {
+        endGame();
+    }
+}
+
+function endGame() {
+    document.getElementById("quiz-screen").classList.add("hidden");
+    document.getElementById("result-screen").classList.remove("hidden");
+    document.getElementById("stats-area").style.visibility = "hidden";
+    
+    document.getElementById("final-correct").innerText = correctCount;
+    document.getElementById("total-q").innerText = gameQs.length;
+    
+    let ratio = correctCount / gameQs.length;
+    let msg = "Tebrikler!";
+    if(ratio < 0.5) msg = "Biraz daha tekrar yapmalısın.";
+    else if(ratio >= 0.9) msg = "Mükemmel performans!";
+    
+    document.getElementById("feedback-msg").innerText = msg;
+}
+
+function toggleTheme() {
+    document.body.classList.toggle("dark-mode");
+}
+</script>
+</body>
+</html>
