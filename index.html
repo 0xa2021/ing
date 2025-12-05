@@ -18,11 +18,9 @@
     body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; transition: 0.3s; padding: 10px; }
     .container { background: var(--card); width: 100%; max-width: 500px; padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; position: relative; display: flex; flex-direction: column; min-height: 500px; }
     
-    /* Header & Stats */
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e5e7eb; }
     .stats { font-weight: bold; font-size: 1.1rem; display: flex; gap: 15px; visibility: hidden; }
     
-    /* Theme Switch */
     .theme-switch { position: relative; display: inline-block; width: 50px; height: 26px; }
     .theme-switch input { opacity: 0; width: 0; height: 0; }
     .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
@@ -30,7 +28,6 @@
     input:checked + .slider { background-color: var(--primary); }
     input:checked + .slider:before { transform: translateX(24px); content: "🌙"; }
 
-    /* Inputs & Buttons */
     .input-box { padding: 14px; border: 2px solid #e5e7eb; border-radius: 10px; width: 80%; font-size: 1rem; text-align: center; margin-bottom: 25px; background: transparent; color: var(--text); outline: none; }
     .input-box:focus { border-color: var(--primary); }
     .btn-grid { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
@@ -40,7 +37,6 @@
     .btn-primary { background: var(--primary); color: white; width: 100%; margin-top: 15px; }
     .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
 
-    /* Content & Footer */
     .content { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
     .question { font-size: 1.3rem; font-weight: 600; margin-bottom: 25px; line-height: 1.4; }
     .options { display: grid; gap: 12px; }
@@ -98,8 +94,9 @@
 </div>
 
 <script>
-// 100 SORULUK HAVUZ (SIRALI)
-const allQuestions = [
+// 100 SORULUK HAVUZ (Ham Veri)
+// Cevaplar veride hep 0. indekste ama OYUNDA KARIŞACAK.
+const sourceQuestions = [
     {q: "My brother usually ______ up early.", o: ["gets", "get", "getting", "is get"], a: 0},
     {q: "______ your parents go to the cinema?", o: ["Do", "Does", "Are", "Is"], a: 0},
     {q: "I ______ agree with you.", o: ["don't", "am not", "doesn't", "not"], a: 0},
@@ -203,12 +200,44 @@ const allQuestions = [
 
 let gameQs = [], currentIdx = 0, correctCount = 0, wrongCount = 0;
 
+// DETERMINISTİK (SABİT) RASTGELE SAYI ÜRETİCİSİ
+// Bu fonksiyon her index (tohum) için hep aynı sonucu verir.
+// Örn: getSeededRandom(5) her zaman 0.823 verir.
+function getSeededRandom(seed) {
+    var x = Math.sin(seed + 1234) * 10000;
+    return x - Math.floor(x);
+}
+
 function startGame(count) {
     let name = document.getElementById("username").value.trim();
     if (!name) name = "Anonim";
     
-    // KARIŞTIRMA İPTAL: İlk 'count' kadar soruyu sırayla al
-    gameQs = allQuestions.slice(0, count);
+    // Gelişmiş Sabit Karıştırma:
+    // Her sorunun şıklarını "soru numarasını" kullanarak karıştırır.
+    // Ahmet de, Mehmet de, Ayşe de 44. soruya geldiğinde aynı karışık şıkları görür.
+    gameQs = sourceQuestions.slice(0, count).map((item, index) => {
+        let options = [...item.o];
+        let correctAnswerText = options[0]; // Doğru cevap metni
+        
+        // Bu soru için sabit bir karıştırma yapalım
+        // Fisher-Yates Shuffle ama sabit tohumlu (index)
+        for (let i = options.length - 1; i > 0; i--) {
+            // Rastgele sayıyı o anki index'e göre üret
+            let seed = index * 100 + i; 
+            let rnd = getSeededRandom(seed);
+            let j = Math.floor(rnd * (i + 1));
+            [options[i], options[j]] = [options[j], options[i]];
+        }
+        
+        // Şimdi doğru cevabın yeni yerini bulalım
+        let newAnswerIndex = options.indexOf(correctAnswerText);
+        
+        return {
+            q: item.q,
+            o: options,
+            a: newAnswerIndex
+        };
+    });
     
     document.getElementById("start-screen").classList.add("hidden");
     document.getElementById("quiz-screen").classList.remove("hidden");
