@@ -3,104 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Speakout Seviye Testi</title>
+    <title>Speakout & Dino Pro</title>
     <style>
         /* --- RENK VE TASARIM AYARLARI --- */
         :root {
-            /* Varsayılan (LIGHT MODE) */
-            --bg-color: #f2f4f7;
-            --card-bg: #ffffff;
-            --text-color: #1c1e21;
-            --sub-text: #65676b;
-            --border-color: #e4e6eb;
-            --primary-color: #10a37f; /* Koyu Yeşil */
-            --primary-text: #ffffff;
-            --hover-color: #0e8c6c;
-            --wrong-color: #dc3545;
-            --input-bg: #ffffff;
-            --shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
-        /* DARK MODE (Faralya+) */
-        body.dark-mode {
-            --bg-color: #182025;
+            /* DARK MODE (Varsayılan - Faralya+) */
+            --bg-color: #202124;
             --card-bg: #232d34;
             --text-color: #ffffff;
-            --sub-text: #8899a6;
+            --sub-text: #acacac;
             --border-color: #3e4c56;
-            --primary-color: #6bdfa6; /* Mint Yeşili */
+            --primary-color: #6bdfa6;
             --primary-text: #0d2e1f;
             --hover-color: #5acba4;
             --wrong-color: #ff6b6b;
-            --input-bg: #182025;
-            --shadow: 0 10px 30px rgba(0,0,0,0.3);
+            --switch-bg: #0f1519;
+            
+            /* Oyun Renkleri (Dark) */
+            --game-bg: #202124;
+            --game-obj: #acacac; 
         }
 
-        * { box-sizing: border-box; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
-        body { font-family: 'Inter', system-ui, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
+        /* LIGHT MODE */
+        body.light-mode {
+            --bg-color: #f7f7f7;
+            --card-bg: #ffffff;
+            --text-color: #535353;
+            --sub-text: #535353;
+            --border-color: #e4e6eb;
+            --primary-color: #10a37f;
+            --primary-text: #ffffff;
+            --hover-color: #0e8c6c;
+            --wrong-color: #dc3545;
+            --switch-bg: #e4e6eb;
+            
+            /* Oyun Renkleri (Light) */
+            --game-bg: #ffffff;
+            --game-obj: #535353;
+        }
+
+        * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }
+        body { font-family: 'Inter', system-ui, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; user-select: none; -webkit-user-select: none; }
         .app-container { width: 100%; max-width: 900px; margin-top: 10px; flex-grow: 1; }
 
         /* ÜST BAR */
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; margin-bottom: 20px; width: 100%; max-width: 900px; }
         .back-btn { background: none; border: none; color: var(--sub-text); font-size: 1rem; cursor: pointer; display: none; align-items: center; gap: 5px; font-weight: 600; padding: 8px 12px; border-radius: 8px; }
         .back-btn:hover { background-color: rgba(128,128,128,0.1); color: var(--text-color); }
-        
-        /* MODERN SWITCH (GÜNEŞ/AY) */
-        .theme-switch-wrapper { display: flex; align-items: center; }
-        .theme-switch { position: relative; display: inline-block; width: 60px; height: 30px; background-color: #ccc; border-radius: 34px; cursor: pointer; transition: 0.4s; display: flex; align-items: center; justify-content: space-between; padding: 0 5px; }
-        .theme-switch input { display: none; }
-        .slider { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; z-index: 2; }
-        .icon { font-size: 14px; z-index: 1; user-select: none; }
-        
-        /* Switch Açıkken (Dark Mode) */
-        input:checked + .theme-switch { background-color: #6bdfa6; }
-        input:checked + .theme-switch .slider { transform: translateX(30px); background-color: #182025; }
 
-        /* EKRAN GEÇİŞLERİ */
+        /* SWITCH */
+        .theme-switch-wrapper { display: flex; align-items: center; }
+        .theme-switch { position: relative; display: inline-block; width: 60px; height: 30px; background-color: var(--switch-bg); border-radius: 34px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 0 5px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); }
+        .theme-switch input { display: none; }
+        .slider { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; background: var(--primary-color); border-radius: 50%; transition: 0.3s; z-index: 2; }
+        .icon { font-size: 14px; z-index: 1; }
+        input:checked + .slider { transform: translateX(30px); }
+
+        /* EKRANLAR */
         .screen { display: none; animation: fadeIn 0.4s ease; }
         .active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* GİRİŞ EKRANI */
-        .login-box { text-align: center; background: var(--card-bg); padding: 40px; border-radius: 24px; max-width: 400px; margin: 40px auto; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
-        .input-nick { width: 100%; padding: 16px; border-radius: 12px; border: 2px solid var(--border-color); background: var(--input-bg); color: var(--text-color); font-size: 1rem; margin-bottom: 20px; outline: none; text-align: center; }
+        /* GİRİŞ & MENÜ */
+        .login-box { text-align: center; background: var(--card-bg); padding: 40px; border-radius: 24px; max-width: 400px; margin: 40px auto; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .input-nick { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid var(--border-color); background: var(--bg-color); color: var(--text-color); font-size: 1rem; margin-bottom: 20px; outline: none; text-align: center; }
         .input-nick:focus { border-color: var(--primary-color); }
-        .btn-primary { width: 100%; padding: 16px; border-radius: 12px; border: none; background-color: var(--primary-color); color: var(--primary-text); font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: transform 0.2s; }
-        .btn-primary:hover { transform: translateY(-2px); background-color: var(--hover-color); }
+        .btn-primary { width: 100%; padding: 15px; border-radius: 12px; border: none; background-color: var(--primary-color); color: var(--primary-text); font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: transform 0.1s; }
+        .btn-primary:active { transform: scale(0.98); }
 
-        /* MENÜ KARTLARI (2x2) */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .menu-card { background-color: var(--primary-color); color: var(--primary-text); padding: 25px; border-radius: 20px; cursor: pointer; position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 220px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.2s; }
-        .menu-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .card-header { font-size: 1.4rem; font-weight: 800; margin-bottom: 5px; }
-        .card-sub { font-size: 0.9rem; font-weight: 700; opacity: 0.9; margin-bottom: 15px; text-transform: uppercase; }
-        .card-desc { font-size: 0.9rem; line-height: 1.4; background: rgba(255,255,255,0.25); padding: 10px; border-radius: 12px; font-weight: 500; }
+        .menu-card:hover { transform: translateY(-5px); }
+        .card-header { font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; }
+        .card-sub { font-size: 0.9rem; font-weight: 700; opacity: 0.8; margin-bottom: 15px; text-transform: uppercase; }
+        .card-desc { font-size: 0.85rem; line-height: 1.4; background: rgba(255,255,255,0.25); padding: 10px; border-radius: 12px; font-weight: 500; }
         .plus-icon { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; font-weight: bold; opacity: 0.5; }
 
-        /* QUIZ ALANI */
-        .quiz-container { background: var(--card-bg); padding: 30px; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
+        /* QUIZ */
+        .quiz-container { background: var(--card-bg); padding: 30px; border-radius: 24px; border: 1px solid var(--border-color); }
         .quiz-info { display: flex; justify-content: space-between; color: var(--sub-text); margin-bottom: 20px; font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
-        .question-text { font-size: 1.4rem; font-weight: 700; margin-bottom: 30px; line-height: 1.4; }
+        .question-text { font-size: 1.3rem; font-weight: 700; margin-bottom: 30px; line-height: 1.4; }
         .options-grid { display: grid; gap: 12px; }
-        .option-btn { width: 100%; padding: 18px; text-align: left; background: var(--input-bg); color: var(--text-color); border: 2px solid var(--border-color); border-radius: 12px; cursor: pointer; font-size: 1.05rem; font-weight: 500; }
+        .option-btn { width: 100%; padding: 18px; text-align: left; background: var(--bg-color); color: var(--text-color); border: 2px solid var(--border-color); border-radius: 12px; cursor: pointer; font-size: 1rem; font-weight: 500; }
         .option-btn:hover { border-color: var(--primary-color); }
         .correct { background-color: var(--primary-color) !important; color: var(--primary-text) !important; border-color: var(--primary-color) !important; }
         .wrong { background-color: var(--wrong-color) !important; color: white !important; border-color: var(--wrong-color) !important; }
 
         /* SONUÇ */
-        .result-box { text-align: center; background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
+        .result-box { text-align: center; background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--border-color); }
         .score-circle { width: 150px; height: 150px; background: var(--primary-color); color: var(--primary-text); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 3.5rem; font-weight: 800; margin: 0 auto 20px auto; }
-        .signature { text-align: center; margin-top: 40px; color: var(--sub-text); opacity: 0.3; font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; user-select: none; }
+        
+        /* --- DINO OYUN ALANI (PRO) --- */
+        #game-container { 
+            text-align: center; 
+            background: var(--game-bg); 
+            padding: 0; 
+            border-radius: 10px; 
+            border: 1px solid var(--border-color); 
+            overflow: hidden; 
+            position: relative; 
+            width: 100%; 
+            height: 300px; /* Sabit Yükseklik */
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        canvas { display: block; width: 100%; height: 100%; }
+        
+        /* Oyun İçi Arayüz */
+        .game-ui { 
+            position: absolute; 
+            top: 20px; 
+            right: 20px; 
+            font-family: 'Courier New', Courier, monospace; 
+            font-weight: 900; 
+            color: var(--game-obj); 
+            font-size: 1.4rem; 
+            pointer-events: none; 
+            letter-spacing: 2px;
+        }
+        .game-over-msg { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            text-align: center; 
+            display: none; 
+        }
+        .game-over-text { 
+            font-family: 'Courier New', Courier, monospace; 
+            font-size: 1.8rem; 
+            color: var(--game-obj); 
+            font-weight: 900; 
+            margin-bottom: 20px; 
+            letter-spacing: 2px;
+        }
+        .retry-icon { 
+            cursor: pointer; 
+            width: 44px; 
+            height: 44px; 
+            background: var(--game-obj); 
+            mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>') no-repeat center; 
+            -webkit-mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>') no-repeat center; 
+            margin: 0 auto;
+            transition: transform 0.2s;
+        }
+        .retry-icon:hover { transform: rotate(30deg); }
 
-        @media (max-width: 600px) { .grid-container { grid-template-columns: 1fr; } .menu-card { min-height: auto; } }
+        .signature { text-align: center; margin-top: 40px; color: var(--sub-text); opacity: 0.3; font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; user-select: none; }
+        @media (max-width: 600px) { .grid-container { grid-template-columns: 1fr; } }
     </style>
 </head>
-<body class="dark-mode"> <div class="top-bar">
+<body class="dark-mode">
+
+<div class="top-bar">
     <button id="back-btn" class="back-btn" onclick="goBackToMenu()"><span>❮</span> Menü</button>
     <div style="flex-grow:1;"></div>
     
     <label class="theme-switch-wrapper">
-        <input type="checkbox" id="theme-toggle" checked> <div class="theme-switch">
+        <input type="checkbox" id="theme-toggle" checked>
+        <div class="theme-switch">
             <span class="icon">☀️</span>
             <span class="icon">🌙</span>
             <div class="slider"></div>
@@ -112,7 +174,6 @@
     <div id="screen-login" class="screen active">
         <div class="login-box">
             <h1 style="color:var(--primary-color); margin-bottom:10px;">Hoş Geldiniz</h1>
-            <p style="color:var(--sub-text); margin-bottom:30px;">Başlamak için isminizi girin</p>
             <input type="text" id="nickname" class="input-nick" placeholder="İsminiz (Opsiyonel)">
             <button class="btn-primary" onclick="goToMenu()">BAŞLA</button>
         </div>
@@ -120,44 +181,38 @@
 
     <div id="screen-menu" class="screen">
         <h2 style="margin-bottom:5px;">Egzersizler</h2>
-        <p style="color:var(--sub-text); margin-bottom:25px;">Merhaba <span id="display-nick" style="color:var(--primary-color); font-weight:bold;">Misafir</span>, bir seviye seç:</p>
+        <p style="color:var(--sub-text); margin-bottom:25px;">Merhaba <span id="display-nick" style="color:var(--primary-color); font-weight:bold;">Misafir</span>, seçimini yap:</p>
         
         <div class="grid-container">
             <div class="menu-card" onclick="startQuiz('block1')">
                 <div class="plus-icon">+</div>
                 <div class="card-header">1. Grup</div>
-                <div class="card-sub">Temel İletişim (Ünite 1-3)</div>
-                <div class="card-desc">
-                    <strong>Konular:</strong> am/is/are, Present Simple, Have/Has got<br>
-                    <strong>Odak:</strong> Aile, Günlük Rutinler, Tanışma
-                </div>
+                <div class="card-sub">Ünite 1-3</div>
+                <div class="card-desc">am/is/are, Present Simple, Have got<br>Aile, Rutinler, Tanışma</div>
             </div>
             <div class="menu-card" onclick="startQuiz('block2')">
                 <div class="plus-icon">+</div>
                 <div class="card-header">2. Grup</div>
-                <div class="card-sub">Mekan & Geçmiş (Ünite 4-6)</div>
-                <div class="card-desc">
-                    <strong>Konular:</strong> There is/are, Past Simple, Countable/Uncountable<br>
-                    <strong>Odak:</strong> Yemek, Mekanlar, Geçmiş Olaylar
-                </div>
+                <div class="card-sub">Ünite 4-6</div>
+                <div class="card-desc">There is/are, Past Simple, Countable<br>Mekanlar, Yemek, Geçmiş</div>
             </div>
             <div class="menu-card" onclick="startQuiz('block3')">
                 <div class="plus-icon">+</div>
                 <div class="card-header">3. Grup</div>
-                <div class="card-sub">Hareket & Kıyas (Ünite 7-9)</div>
-                <div class="card-desc">
-                    <strong>Konular:</strong> Comparatives, Present Continuous, Have to/Can<br>
-                    <strong>Odak:</strong> Seyahat, Ulaşım, Zorunluluklar
-                </div>
+                <div class="card-sub">Ünite 7-9</div>
+                <div class="card-desc">Comparatives, Present Cont., Can<br>Seyahat, Kıyaslama, Ulaşım</div>
             </div>
             <div class="menu-card" onclick="startQuiz('block4')">
                 <div class="plus-icon">+</div>
                 <div class="card-header">4. Grup</div>
-                <div class="card-sub">Gelecek & Tavsiye (Ünite 10-12)</div>
-                <div class="card-desc">
-                    <strong>Konular:</strong> Future Tense, Should, Present Perfect<br>
-                    <strong>Odak:</strong> Sağlık, Planlar, Deneyimler
-                </div>
+                <div class="card-sub">Ünite 10-12</div>
+                <div class="card-desc">Future Tense, Should, Present Perfect<br>Gelecek Planları, Sağlık</div>
+            </div>
+            <div class="menu-card" onclick="openGame()" style="background-color: var(--hover-color);">
+                <div class="plus-icon">+</div>
+                <div class="card-header">Dino Run 🦖</div>
+                <div class="card-sub">Bonus Oyun</div>
+                <div class="card-desc">Orijinal Chrome Dinozoru.<br>Rekor kırmaya çalış!</div>
             </div>
         </div>
     </div>
@@ -171,7 +226,7 @@
             <div id="question-text" class="question-text"></div>
             <div id="options-container" class="options-grid"></div>
             <br>
-            <button id="next-btn" class="btn-primary" style="display:none;" onclick="nextQuestion()">Sonraki Soru ➔</button>
+            <button id="next-btn" class="btn-primary" style="display:none;" onclick="nextQuestion()">Sonraki ➔</button>
         </div>
     </div>
 
@@ -183,12 +238,24 @@
             <button class="btn-primary" onclick="showScreen('screen-menu')">Menüye Dön</button>
         </div>
     </div>
+
+    <div id="screen-game" class="screen">
+        <div id="game-container">
+            <canvas id="gameCanvas"></canvas>
+            <div class="game-ui">HI <span id="hi-score">00000</span> <span id="curr-score">00000</span></div>
+            <div class="game-over-msg" id="game-over-msg">
+                <div class="game-over-text">GAME OVER</div>
+                <div class="retry-icon" onclick="resetGame()"></div>
+            </div>
+        </div>
+        <p style="text-align:center; color:var(--sub-text); margin-top:10px;"><b>BOŞLUK</b>, <b>YUKARI OK</b> veya <b>Ekrana Dokun</b></p>
+    </div>
     
     <div class="signature">gemini by 0x</div>
 </div>
 
 <script>
-    // --- 400 SORULUK VERİ SETİ ---
+    // --- 400 SORU VERİ SETİ (Aynen Korundu) ---
     const quizData = {
         block1: [
             { "q": "No, I ______ Spanish. I am Italian.", "o": ["isn't", "aren't", "'m not", "not"], "a": 2 },
@@ -604,27 +671,22 @@
     const toggleSwitch = document.getElementById('theme-toggle');
     const body = document.body;
 
-    // Sayfa Yüklendiğinde
     if(localStorage.getItem('theme') === 'light') {
         body.classList.remove('dark-mode');
         body.classList.add('light-mode');
-        toggleSwitch.checked = false; // Light modda unchecked
+        toggleSwitch.checked = false;
     } else {
-        // Varsayılan Dark
         body.classList.add('dark-mode');
         body.classList.remove('light-mode');
-        toggleSwitch.checked = true; // Dark modda checked
+        toggleSwitch.checked = true;
     }
 
-    // Switch Değiştiğinde
     toggleSwitch.addEventListener('change', function() {
         if(this.checked) {
-            // Checked = Dark Mode
             body.classList.add('dark-mode');
             body.classList.remove('light-mode');
             localStorage.setItem('theme', 'dark');
         } else {
-            // Unchecked = Light Mode
             body.classList.remove('dark-mode');
             body.classList.add('light-mode');
             localStorage.setItem('theme', 'light');
@@ -641,13 +703,13 @@
     function showScreen(screenId) {
         document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
-        
         const backBtn = document.getElementById('back-btn');
-        if (screenId === 'screen-quiz') {
+        if (screenId === 'screen-quiz' || screenId === 'screen-game') {
             backBtn.style.display = 'flex';
         } else {
             backBtn.style.display = 'none';
         }
+        if(screenId !== 'screen-game') gameRunning = false;
     }
 
     function startQuiz(blockKey) {
@@ -665,10 +727,8 @@
         document.getElementById('current-q').innerText = currentIndex + 1;
         document.getElementById('total-q').innerText = currentQuestions.length;
         document.getElementById('question-text').innerHTML = q.q;
-        
         const container = document.getElementById('options-container');
         container.innerHTML = '';
-
         q.o.forEach((opt, index) => {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
@@ -682,7 +742,6 @@
     function checkAnswer(selectedIndex, correctIndex, btnElement) {
         const buttons = document.querySelectorAll('.option-btn');
         buttons.forEach(btn => btn.disabled = true);
-
         if (selectedIndex === correctIndex) {
             btnElement.classList.add('correct');
             score++;
@@ -696,16 +755,10 @@
 
     function nextQuestion() {
         currentIndex++;
-        if (currentIndex < currentQuestions.length) {
-            showQuestion();
-        } else {
-            finishQuiz();
-        }
+        if (currentIndex < currentQuestions.length) { showQuestion(); } else { finishQuiz(); }
     }
 
-    function updateScore() {
-        document.getElementById('score').innerText = score;
-    }
+    function updateScore() { document.getElementById('score').innerText = score; }
 
     function finishQuiz() {
         showScreen('screen-result');
@@ -714,15 +767,229 @@
         let msg = "İyi Deneme!";
         if(percentage >= 80) msg = "Harika İş!";
         else if(percentage >= 50) msg = "Güzel!";
-        
         document.getElementById('result-msg').innerText = `${msg} ${userNick}`;
         document.getElementById('result-detail').innerText = `${currentQuestions.length} sorudan ${score} tanesini bildin.`;
     }
 
     function goBackToMenu() {
-        if (confirm("Testten çıkmak istiyor musun?")) {
+        if (confirm("Menüye dönmek istiyor musun?")) {
+            gameRunning = false;
             showScreen('screen-menu');
         }
+    }
+
+    /* --- DINO GAME LOGIC (PRO VERSION) --- */
+    let canvas, ctx;
+    let dino, obstacles, clouds, scoreDino, hiScore;
+    let gameSpeed, initialSpawnTimer, spawnTimer;
+    let gameRunning = false;
+    let animationId;
+
+    function openGame() {
+        showScreen('screen-game');
+        initGame();
+    }
+
+    function initGame() {
+        canvas = document.getElementById('gameCanvas');
+        ctx = canvas.getContext('2d');
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = 300;
+
+        // Variables
+        gameSpeed = 5; // Daha hızlı başlasın
+        scoreDino = 0;
+        hiScore = localStorage.getItem('dinoHiScore') || 0;
+        spawnTimer = 0;
+        initialSpawnTimer = 200;
+        gameRunning = true;
+        document.getElementById('game-over-msg').style.display = 'none';
+
+        // Entities
+        dino = {
+            x: 50,
+            y: canvas.height - 50, // Yerden başlat
+            w: 44, // Pixel Art'a uygun
+            h: 47,
+            dy: 0,
+            jumpForce: 11, // Zıplama gücü
+            originalHeight: 47,
+            grounded: true,
+            timer: 0
+        };
+
+        obstacles = [];
+        clouds = [];
+
+        // Controls
+        document.addEventListener('keydown', function(evt) {
+            if (evt.code === "Space" || evt.code === "ArrowUp") Jump();
+        });
+        canvas.addEventListener('touchstart', function() {
+            Jump();
+        });
+
+        requestAnimationFrame(Update);
+    }
+
+    function Jump() {
+        if (dino.grounded && gameRunning) {
+            dino.dy = -dino.jumpForce;
+            dino.grounded = false;
+        }
+    }
+
+    function DrawSpriteDino(x, y, w, h, color) {
+        ctx.fillStyle = color;
+        // Basit Pixel Art T-Rex Mantığı (Karelerle)
+        // Baş
+        ctx.fillRect(x + w*0.5, y, w*0.5, h*0.3);
+        // Göz
+        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--game-bg');
+        ctx.fillRect(x + w*0.65, y + h*0.05, w*0.1, h*0.1);
+        ctx.fillStyle = color;
+        // Gövde
+        ctx.fillRect(x, y + h*0.3, w*0.6, h*0.4);
+        ctx.fillRect(x + w*0.2, y + h*0.3, w*0.6, h*0.4); 
+        // Bacaklar (Animasyonlu)
+        if (gameRunning) {
+            dino.timer++;
+            if (Math.floor(dino.timer / 10) % 2 === 0) {
+                ctx.fillRect(x + w*0.2, y + h*0.7, w*0.15, h*0.3); // Sol Bacak
+            } else {
+                ctx.fillRect(x + w*0.5, y + h*0.7, w*0.15, h*0.3); // Sağ Bacak
+            }
+        } else {
+            ctx.fillRect(x + w*0.2, y + h*0.7, w*0.15, h*0.3);
+            ctx.fillRect(x + w*0.5, y + h*0.7, w*0.15, h*0.3);
+        }
+    }
+
+    function DrawCactus(x, y, w, h, color) {
+        ctx.fillStyle = color;
+        // Ana gövde
+        ctx.fillRect(x + w*0.3, y, w*0.4, h);
+        // Sol kol
+        ctx.fillRect(x, y + h*0.2, w*0.2, h*0.4);
+        ctx.fillRect(x + w*0.1, y + h*0.4, w*0.3, h*0.1);
+        // Sağ kol
+        ctx.fillRect(x + w*0.8, y + h*0.1, w*0.2, h*0.4);
+        ctx.fillRect(x + w*0.6, y + h*0.3, w*0.3, h*0.1);
+    }
+
+    function DrawCloud(x, y, color) {
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.5;
+        ctx.fillRect(x, y, 40, 10);
+        ctx.fillRect(x + 10, y - 10, 20, 20);
+        ctx.globalAlpha = 1.0;
+    }
+
+    function Update() {
+        if (!gameRunning) return;
+        animationId = requestAnimationFrame(Update);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        let color = getComputedStyle(document.body).getPropertyValue('--game-obj');
+
+        // --- Bulutlar ---
+        if (Math.random() < 0.01) {
+            clouds.push({ x: canvas.width, y: Math.random() * 100 + 20 });
+        }
+        for (let i = 0; i < clouds.length; i++) {
+            let c = clouds[i];
+            c.x -= gameSpeed * 0.2;
+            DrawCloud(c.x, c.y, color);
+            if (c.x < -50) { clouds.splice(i, 1); i--; }
+        }
+
+        // --- Fizik ---
+        dino.dy += 0.6; // Yerçekimi
+        dino.y += dino.dy;
+
+        // Zemin Kontrolü
+        if (dino.y + dino.h > canvas.height - 20) {
+            dino.y = canvas.height - 20 - dino.h;
+            dino.dy = 0;
+            dino.grounded = true;
+        } else {
+            dino.grounded = false;
+        }
+
+        // --- Engeller ---
+        spawnTimer--;
+        if (spawnTimer <= 0) {
+            let obsType = Math.random();
+            let obsWidth = 25; 
+            let obsHeight = 45;
+            
+            if (obsType > 0.6) { obsWidth = 45; obsHeight = 35; } // Geniş kaktüs
+            
+            obstacles.push({
+                x: canvas.width + Math.random() * 300, // Rastgele uzaklık
+                y: canvas.height - 20 - obsHeight,
+                w: obsWidth,
+                h: obsHeight
+            });
+            spawnTimer = initialSpawnTimer - gameSpeed * 8;
+            if (spawnTimer < 60) spawnTimer = 60;
+        }
+
+        for (let i = 0; i < obstacles.length; i++) {
+            let o = obstacles[i];
+            o.x -= gameSpeed;
+            DrawCactus(o.x, o.y, o.w, o.h, color);
+
+            // Çarpışma (AABB - Slightly Forgiving)
+            if (
+                dino.x < o.x + o.w - 5 &&
+                dino.x + dino.w - 5 > o.x &&
+                dino.y < o.y + o.h - 5 &&
+                dino.y + dino.h - 5 > o.y
+            ) {
+                GameOver();
+            }
+
+            if (o.x + o.w < 0) {
+                obstacles.splice(i, 1);
+                i--;
+            }
+        }
+
+        // --- Dino Çiz ---
+        DrawSpriteDino(dino.x, dino.y, dino.w, dino.h, color);
+
+        // --- Zemin Çizgisi ---
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height - 20);
+        ctx.lineTo(canvas.width, canvas.height - 20);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // --- Skor ve Hız ---
+        scoreDino++;
+        gameSpeed += 0.002; // Hızlanma
+        
+        // UI
+        let scoreText = Math.floor(scoreDino).toString().padStart(5, "0");
+        let hiText = Math.floor(hiScore).toString().padStart(5, "0");
+        document.getElementById('curr-score').innerText = scoreText;
+        document.getElementById('hi-score').innerText = hiText;
+    }
+
+    function GameOver() {
+        gameRunning = false;
+        cancelAnimationFrame(animationId);
+        if (scoreDino > hiScore) {
+            hiScore = Math.floor(scoreDino);
+            localStorage.setItem('dinoHiScore', hiScore);
+        }
+        document.getElementById('game-over-msg').style.display = 'block';
+    }
+
+    function resetGame() {
+        initGame();
     }
 </script>
 
