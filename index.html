@@ -1,302 +1,682 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>İngilizce Final Testi</title>
-<style>
-    :root {
-        --bg: #f0f2f5; --card: #ffffff; --text: #1f2937; --primary: #3b82f6;
-        --correct-bg: #d1fae5; --correct-text: #065f46;
-        --wrong-bg: #fee2e2; --wrong-text: #991b1b;
-    }
-    body.dark-mode {
-        --bg: #111827; --card: #1f2937; --text: #f9fafb; --primary: #60a5fa;
-        --correct-bg: #064e3b; --correct-text: #6ee7b7;
-        --wrong-bg: #7f1d1d; --wrong-text: #fca5a5;
-    }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; transition: 0.3s; padding: 10px; }
-    .container { background: var(--card); width: 100%; max-width: 500px; padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; position: relative; display: flex; flex-direction: column; min-height: 500px; }
-    
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e5e7eb; }
-    .stats { font-weight: bold; font-size: 1.1rem; display: flex; gap: 15px; visibility: hidden; }
-    
-    .theme-switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-    .theme-switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-    .slider:before { position: absolute; content: "☀️"; display: flex; align-items: center; justify-content: center; font-size: 14px; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-    input:checked + .slider { background-color: var(--primary); }
-    input:checked + .slider:before { transform: translateX(24px); content: "🌙"; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Speakout Seviye Testi</title>
+    <style>
+        /* --- RENK TEMALARI --- */
+        :root {
+            /* DARK MODE (Varsayılan) */
+            --bg-color: #182025;
+            --card-bg: #232d34;
+            --text-color: #ffffff;
+            --sub-text: #8899a6;
+            --border-color: #3e4c56;
+            --primary-color: #6bdfa6; /* Mint */
+            --primary-text: #0d2e1f;
+            --hover-color: #5acba4;
+            --wrong-color: #ff6b6b;
+            --switch-bg: #0f1519;
+        }
 
-    .input-box { padding: 14px; border: 2px solid #e5e7eb; border-radius: 10px; width: 80%; font-size: 1rem; text-align: center; margin-bottom: 25px; background: transparent; color: var(--text); outline: none; }
-    .input-box:focus { border-color: var(--primary); }
-    .btn-grid { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-    button { padding: 12px 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: 0.2s; }
-    .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
-    .btn-outline:hover { background: var(--primary); color: white; }
-    .btn-primary { background: var(--primary); color: white; width: 100%; margin-top: 15px; }
-    .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
+        /* LIGHT MODE */
+        body.light-mode {
+            --bg-color: #f2f4f7;
+            --card-bg: #ffffff;
+            --text-color: #1c1e21;
+            --sub-text: #65676b;
+            --border-color: #e4e6eb;
+            --primary-color: #10a37f;
+            --primary-text: #ffffff;
+            --hover-color: #0e8c6c;
+            --wrong-color: #dc3545;
+            --switch-bg: #e4e6eb;
+        }
 
-    .content { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
-    .question { font-size: 1.3rem; font-weight: 600; margin-bottom: 25px; line-height: 1.4; }
-    .options { display: grid; gap: 12px; }
-    .opt-btn { background: var(--bg); border: 2px solid transparent; color: var(--text); padding: 15px; text-align: left; border-radius: 10px; font-size: 1rem; transition: 0.2s; }
-    .opt-btn:hover:not(:disabled) { border-color: var(--primary); filter: brightness(0.95); }
-    .correct { background: var(--correct-bg) !important; color: var(--correct-text) !important; border-color: var(--correct-text) !important; }
-    .wrong { background: var(--wrong-bg) !important; color: var(--wrong-text) !important; border-color: var(--wrong-text) !important; }
-    .footer { margin-top: 20px; }
-    .progress-text { margin-top: 15px; font-size: 0.9rem; color: var(--text); opacity: 0.7; }
-    .hidden { display: none !important; }
-    .score-big { font-size: 3.5rem; font-weight: bold; color: var(--primary); margin: 20px 0; }
-</style>
+        * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }
+        body { font-family: 'Inter', system-ui, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
+        .app-container { width: 100%; max-width: 900px; margin-top: 10px; flex-grow: 1; }
+
+        /* ÜST BAR & SWITCH */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%; }
+        .back-btn { background: none; border: none; color: var(--sub-text); font-size: 1rem; cursor: pointer; display: none; align-items: center; gap: 5px; font-weight: 600; padding: 8px 12px; border-radius: 8px; }
+        .back-btn:hover { background-color: rgba(128,128,128,0.1); color: var(--text-color); }
+
+        /* GÜNEŞ/AY SWITCH */
+        .theme-switch { position: relative; width: 60px; height: 30px; background: var(--switch-bg); border-radius: 30px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 0 5px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); }
+        .theme-switch input { display: none; }
+        .switch-icon { font-size: 14px; z-index: 1; user-select: none; }
+        .slider { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; background: var(--primary-color); border-radius: 50%; transition: 0.3s; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        input:checked + .slider { transform: translateX(30px); }
+
+        /* EKRANLAR */
+        .screen { display: none; animation: fadeIn 0.4s ease; }
+        .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* GİRİŞ */
+        .login-box { text-align: center; background: var(--card-bg); padding: 40px; border-radius: 24px; max-width: 400px; margin: 40px auto; border: 1px solid var(--border-color); }
+        .input-nick { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid var(--border-color); background: var(--bg-color); color: var(--text-color); font-size: 1rem; margin-bottom: 20px; outline: none; text-align: center; }
+        .input-nick:focus { border-color: var(--primary-color); }
+        .btn-primary { width: 100%; padding: 15px; border-radius: 12px; border: none; background-color: var(--primary-color); color: var(--primary-text); font-weight: 700; font-size: 1.1rem; cursor: pointer; }
+        
+        /* 2x2 MENÜ DÜZENİ */
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .menu-card { background-color: var(--primary-color); color: var(--primary-text); padding: 25px; border-radius: 20px; cursor: pointer; position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 220px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .menu-card:hover { transform: translateY(-5px); }
+        .card-header { font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; }
+        .card-sub { font-size: 0.9rem; font-weight: 700; opacity: 0.8; margin-bottom: 15px; text-transform: uppercase; }
+        .card-desc { font-size: 0.85rem; line-height: 1.4; background: rgba(255,255,255,0.25); padding: 10px; border-radius: 12px; font-weight: 500; }
+        .plus-icon { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; font-weight: bold; opacity: 0.5; }
+
+        /* QUIZ */
+        .quiz-container { background: var(--card-bg); padding: 30px; border-radius: 24px; border: 1px solid var(--border-color); }
+        .quiz-info { display: flex; justify-content: space-between; color: var(--sub-text); margin-bottom: 20px; font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .question-text { font-size: 1.3rem; font-weight: 700; margin-bottom: 30px; line-height: 1.4; }
+        .options-grid { display: grid; gap: 12px; }
+        .option-btn { width: 100%; padding: 18px; text-align: left; background: var(--bg-color); color: var(--text-color); border: 2px solid var(--border-color); border-radius: 12px; cursor: pointer; font-size: 1rem; font-weight: 500; }
+        .option-btn:hover { border-color: var(--primary-color); }
+        .correct { background-color: var(--primary-color) !important; color: var(--primary-text) !important; border-color: var(--primary-color) !important; }
+        .wrong { background-color: var(--wrong-color) !important; color: white !important; border-color: var(--wrong-color) !important; }
+
+        /* SONUÇ */
+        .result-box { text-align: center; background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--border-color); }
+        .score-circle { width: 150px; height: 150px; background: var(--primary-color); color: var(--primary-text); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 3.5rem; font-weight: 800; margin: 0 auto 20px auto; }
+        
+        /* İMZA (Gemini by 0x) */
+        .signature { text-align: center; margin-top: 40px; color: var(--sub-text); opacity: 0.3; font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; user-select: none; }
+
+        @media (max-width: 600px) { .grid-container { grid-template-columns: 1fr; } }
+    </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <div class="stats" id="stats-area">
-            <span style="color: #10b981;">✅ <span id="count-correct">0</span></span>
-            <span style="color: #ef4444;">❌ <span id="count-wrong">0</span></span>
-        </div>
-        <label class="theme-switch">
-            <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
-            <span class="slider"></span>
-        </label>
-    </div>
-
-    <div id="start-screen" class="content">
-        <h1 style="color: var(--primary); margin-bottom:10px;">English Quiz</h1>
-        <p style="margin-bottom:30px; opacity:0.7;">Seviye: Kolay | Unit 1-6</p>
-        <input type="text" id="username" class="input-box" placeholder="Anonim nickname belirle (opsiyonel)" maxlength="15">
-        <p style="margin-bottom:15px;">Soru Sayısı Seç:</p>
-        <div class="btn-grid">
-            <button class="btn-outline" onclick="startGame(25)">İlk 25</button>
-            <button class="btn-outline" onclick="startGame(50)">İlk 50</button>
-            <button class="btn-outline" onclick="startGame(100)">Hepsi (100)</button>
-        </div>
-    </div>
-
-    <div id="quiz-screen" class="content hidden">
-        <div id="question-text" class="question"></div>
-        <div id="options-area" class="options"></div>
-        <div class="footer">
-            <button id="next-btn" class="btn-primary" style="display:none;" onclick="nextQuestion()">Sonraki Soru ➜</button>
-            <div id="progress" class="progress-text"></div>
-        </div>
-    </div>
-
-    <div id="result-screen" class="content hidden">
-        <h2>Test Bitti!</h2>
-        <div class="score-big"><span id="final-correct">0</span> / <span id="total-q">0</span></div>
-        <p id="feedback-msg"></p>
-        <button class="btn-primary" onclick="location.reload()">Tekrar Dene</button>
+<div class="top-bar">
+    <button id="back-btn" class="back-btn" onclick="goBackToMenu()"><span>❮</span> Menü</button>
+    <div style="flex-grow:1;"></div>
+    
+    <div class="theme-switch" onclick="toggleTheme()">
+        <span class="switch-icon">☀️</span>
+        <input type="checkbox" id="theme-cb">
+        <div class="slider"></div>
+        <span class="switch-icon">🌙</span>
     </div>
 </div>
 
+<div class="app-container">
+    <div id="screen-login" class="screen active">
+        <div class="login-box">
+            <h1 style="color:var(--primary-color); margin-bottom:10px;">Hoş Geldiniz</h1>
+            <input type="text" id="nickname" class="input-nick" placeholder="Takma adınız (Opsiyonel)">
+            <button class="btn-primary" onclick="goToMenu()">BAŞLA</button>
+        </div>
+    </div>
+
+    <div id="screen-menu" class="screen">
+        <h2 style="margin-bottom:5px;">Egzersizler</h2>
+        <p style="color:var(--sub-text); margin-bottom:25px;">Merhaba <span id="display-nick" style="color:var(--primary-color); font-weight:bold;">Misafir</span>, seçimini yap:</p>
+        
+        <div class="grid-container">
+            <div class="menu-card" onclick="startQuiz('block1')">
+                <div class="plus-icon">+</div>
+                <div class="card-header">1. Grup</div>
+                <div class="card-sub">Ünite 1-3</div>
+                <div class="card-desc">am/is/are, Present Simple, Have got<br>Aile, Rutinler, Tanışma</div>
+            </div>
+            <div class="menu-card" onclick="startQuiz('block2')">
+                <div class="plus-icon">+</div>
+                <div class="card-header">2. Grup</div>
+                <div class="card-sub">Ünite 4-6</div>
+                <div class="card-desc">There is/are, Past Simple, Countable<br>Mekanlar, Yemek, Geçmiş</div>
+            </div>
+            <div class="menu-card" onclick="startQuiz('block3')">
+                <div class="plus-icon">+</div>
+                <div class="card-header">3. Grup</div>
+                <div class="card-sub">Ünite 7-9</div>
+                <div class="card-desc">Comparatives, Present Cont., Can<br>Seyahat, Kıyaslama, Ulaşım</div>
+            </div>
+            <div class="menu-card" onclick="startQuiz('block4')">
+                <div class="plus-icon">+</div>
+                <div class="card-header">4. Grup</div>
+                <div class="card-sub">Ünite 10-12</div>
+                <div class="card-desc">Future Tense, Should, Present Perfect<br>Gelecek Planları, Sağlık</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-quiz" class="screen">
+        <div class="quiz-container">
+            <div class="quiz-info">
+                <span>Soru <span id="current-q">1</span>/<span id="total-q">0</span></span>
+                <span>Puan: <span id="score" style="color:var(--primary-color);">0</span></span>
+            </div>
+            <div id="question-text" class="question-text"></div>
+            <div id="options-container" class="options-grid"></div>
+            <br>
+            <button id="next-btn" class="btn-primary" style="display:none;" onclick="nextQuestion()">Sonraki ➔</button>
+        </div>
+    </div>
+
+    <div id="screen-result" class="screen">
+        <div class="result-box">
+            <div class="score-circle" id="final-score">0</div>
+            <h2 id="result-msg">Tebrikler!</h2>
+            <p id="result-detail" style="color:var(--sub-text); margin-bottom:30px;"></p>
+            <button class="btn-primary" onclick="showScreen('screen-menu')">Menüye Dön</button>
+        </div>
+    </div>
+    
+    <div class="signature">gemini by 0x</div>
+</div>
+
 <script>
-// 100 SORULUK HAVUZ (Ham Veri)
-// Cevaplar veride hep 0. indekste ama OYUNDA KARIŞACAK.
-const sourceQuestions = [
-    {q: "My brother usually ______ up early.", o: ["gets", "get", "getting", "is get"], a: 0},
-    {q: "______ your parents go to the cinema?", o: ["Do", "Does", "Are", "Is"], a: 0},
-    {q: "I ______ agree with you.", o: ["don't", "am not", "doesn't", "not"], a: 0},
-    {q: "Where ______ your best friend live?", o: ["does", "do", "is", "are"], a: 0},
-    {q: "She ______ a big house.", o: ["hasn't got", "haven't got", "isn't got", "don't got"], a: 0},
-    {q: "______ your uncle got a car?", o: ["Has", "Have", "Do", "Is"], a: 0},
-    {q: "My father's sister is my ______.", o: ["aunt", "uncle", "cousin", "niece"], a: 0},
-    {q: "Look! There ______ three cats.", o: ["are", "is", "was", "be"], a: 0},
-    {q: "There ______ any milk in the fridge.", o: ["isn't", "aren't", "not", "no"], a: 0},
-    {q: "The bank is ______ the post office.", o: ["next to", "between", "in", "on"], a: 0},
-    {q: "I ______ speak French very well.", o: ["can", "do", "am", "have"], a: 0},
-    {q: "______ you help me?", o: ["Can", "Do", "Are", "Have"], a: 0},
-    {q: "I want ______ water.", o: ["some", "a", "many", "any"], a: 0},
-    {q: "______ money do you have?", o: ["How much", "How many", "How", "What"], a: 0},
-    {q: "I ______ at home yesterday.", o: ["was", "were", "am", "did"], a: 0},
-    {q: "We ______ to the cinema last night.", o: ["went", "go", "gone", "going"], a: 0},
-    {q: "She ______ see me yesterday.", o: ["didn't", "doesn't", "don't", "wasn't"], a: 0},
-    {q: "______ you buy the bread?", o: ["Did", "Do", "Were", "Are"], a: 0},
-    {q: "My mother ______ a teacher.", o: ["is", "are", "am", "be"], a: 0},
-    {q: "They ______ football on Sundays.", o: ["play", "plays", "playing", "played"], a: 0},
-    {q: "He ______ (not / like) fish.", o: ["doesn't like", "don't like", "isn't like", "not like"], a: 0},
-    {q: "______ you got a sister?", o: ["Have", "Has", "Do", "Are"], a: 0},
-    {q: "She ______ TV now.", o: ["is watching", "watches", "watch", "watched"], a: 0},
-    {q: "We ______ dinner at the moment.", o: ["are having", "have", "had", "having"], a: 0},
-    {q: "The cat is ______ the table. (Altında)", o: ["under", "on", "in", "next to"], a: 0},
-    {q: "What time ______ it?", o: ["is", "are", "does", "has"], a: 0},
-    {q: "______ a pen on the desk.", o: ["There is", "There are", "They are", "It is"], a: 0},
-    {q: "She ______ to work by bus.", o: ["goes", "go", "going", "gone"], a: 0},
-    {q: "I ______ (study) English now.", o: ["am studying", "study", "studying", "studied"], a: 0},
-    {q: "They ______ (live) in London.", o: ["live", "lives", "living", "lived"], a: 0},
-    {q: "We ______ (not / go) out last night.", o: ["didn't go", "don't go", "wasn't go", "didn't went"], a: 0},
-    {q: "______ she ______ (know) him?", o: ["Does / know", "Do / know", "Is / know", "Has / known"], a: 0},
-    {q: "I ______ (read) a book yesterday.", o: ["read", "readed", "reading", "reads"], a: 0},
-    {q: "He ______ (buy) a new car.", o: ["bought", "buyed", "buys", "buying"], a: 0},
-    {q: "They ______ (be) at school yesterday.", o: ["were", "was", "are", "did"], a: 0},
-    {q: "______ you ______ (see) the film?", o: ["Did / see", "Do / see", "Were / saw", "Did / saw"], a: 0},
-    {q: "I ______ (not / like) coffee.", o: ["don't like", "doesn't like", "not like", "no like"], a: 0},
-    {q: "She ______ (play) tennis every day.", o: ["plays", "play", "playing", "played"], a: 0},
-    {q: "We ______ (watch) a movie now.", o: ["are watching", "watch", "watching", "watched"], a: 0},
-    {q: "He ______ (sleep) at the moment.", o: ["is sleeping", "sleeps", "sleeping", "slept"], a: 0},
-    {q: "______ they ______ (come) tomorrow?", o: ["Are / coming", "Do / come", "Did / come", "Have / come"], a: 0},
-    {q: "I ______ (visit) my aunt next week.", o: ["am visiting", "visit", "visited", "visiting"], a: 0},
-    {q: "She ______ (not / work) on Sundays.", o: ["doesn't work", "don't work", "isn't work", "not work"], a: 0},
-    {q: "______ you ______ (speak) English?", o: ["Do / speak", "Are / speak", "Does / speak", "Is / speak"], a: 0},
-    {q: "Where ______ you ______ (go)?", o: ["are / going", "do / go", "did / go", "have / gone"], a: 0},
-    {q: "What ______ you ______ (do)?", o: ["are / doing", "do / do", "did / do", "have / done"], a: 0},
-    {q: "Why ______ she ______ (cry)?", o: ["is / crying", "does / cry", "did / cry", "has / cried"], a: 0},
-    {q: "When ______ they ______ (arrive)?", o: ["did / arrive", "do / arrive", "are / arrive", "have / arrived"], a: 0},
-    {q: "Who ______ (break) the window?", o: ["broke", "breaked", "breaking", "breaks"], a: 0},
-    {q: "How ______ you ______ (feel)?", o: ["do / feel", "are / feel", "did / feel", "have / felt"], a: 0},
-    {q: "I ______ (have) breakfast at 7.", o: ["have", "has", "having", "had"], a: 0},
-    {q: "She ______ (go) to school by bus.", o: ["goes", "go", "going", "gone"], a: 0},
-    {q: "He ______ (play) football well.", o: ["plays", "play", "playing", "played"], a: 0},
-    {q: "We ______ (live) in a big house.", o: ["live", "lives", "living", "lived"], a: 0},
-    {q: "They ______ (study) hard.", o: ["study", "studies", "studying", "studied"], a: 0},
-    {q: "I ______ (not / eat) meat.", o: ["don't eat", "doesn't eat", "not eat", "no eat"], a: 0},
-    {q: "She ______ (not / drink) tea.", o: ["doesn't drink", "don't drink", "isn't drink", "not drink"], a: 0},
-    {q: "We ______ (not / watch) TV.", o: ["don't watch", "doesn't watch", "not watch", "no watch"], a: 0},
-    {q: "They ______ (not / play) games.", o: ["don't play", "doesn't play", "not play", "no play"], a: 0},
-    {q: "He ______ (not / smoke).", o: ["doesn't smoke", "don't smoke", "isn't smoke", "not smoke"], a: 0},
-    {q: "______ you ______ (like) ice cream?", o: ["Do / like", "Does / like", "Are / like", "Is / like"], a: 0},
-    {q: "______ she ______ (love) him?", o: ["Does / love", "Do / love", "Is / love", "Has / loved"], a: 0},
-    {q: "______ they ______ (know) the answer?", o: ["Do / know", "Does / know", "Are / know", "Is / know"], a: 0},
-    {q: "______ we ______ (need) help?", o: ["Do / need", "Does / need", "Are / need", "Is / need"], a: 0},
-    {q: "______ he ______ (want) a car?", o: ["Does / want", "Do / want", "Is / want", "Has / wanted"], a: 0},
-    {q: "I ______ (be) happy.", o: ["am", "is", "are", "be"], a: 0},
-    {q: "She ______ (be) sad.", o: ["is", "am", "are", "be"], a: 0},
-    {q: "We ______ (be) tired.", o: ["are", "is", "am", "be"], a: 0},
-    {q: "They ______ (be) angry.", o: ["are", "is", "am", "be"], a: 0},
-    {q: "He ______ (be) busy.", o: ["is", "am", "are", "be"], a: 0},
-    {q: "I ______ (be) at home.", o: ["was", "were", "am", "be"], a: 0},
-    {q: "She ______ (be) at school.", o: ["was", "were", "is", "be"], a: 0},
-    {q: "We ______ (be) at the park.", o: ["were", "was", "are", "be"], a: 0},
-    {q: "They ______ (be) at the party.", o: ["were", "was", "are", "be"], a: 0},
-    {q: "He ______ (be) at work.", o: ["was", "were", "is", "be"], a: 0},
-    {q: "I ______ (do) my homework.", o: ["did", "do", "doing", "done"], a: 0},
-    {q: "She ______ (make) a cake.", o: ["made", "make", "making", "makes"], a: 0},
-    {q: "We ______ (go) to the beach.", o: ["went", "go", "going", "gone"], a: 0},
-    {q: "They ______ (see) a movie.", o: ["saw", "see", "seeing", "seen"], a: 0},
-    {q: "He ______ (take) a taxi.", o: ["took", "take", "taking", "taken"], a: 0},
-    {q: "I ______ (give) him a gift.", o: ["gave", "give", "giving", "given"], a: 0},
-    {q: "She ______ (write) a letter.", o: ["wrote", "write", "writing", "written"], a: 0},
-    {q: "We ______ (read) a book.", o: ["read", "readed", "reading", "reads"], a: 0},
-    {q: "They ______ (eat) pizza.", o: ["ate", "eat", "eating", "eaten"], a: 0},
-    {q: "He ______ (drink) water.", o: ["drank", "drink", "drinking", "drunk"], a: 0},
-    {q: "I ______ (run) in the park.", o: ["ran", "run", "running", "runs"], a: 0},
-    {q: "She ______ (swim) in the pool.", o: ["swam", "swim", "swimming", "swum"], a: 0},
-    {q: "We ______ (sing) a song.", o: ["sang", "sing", "singing", "sung"], a: 0},
-    {q: "They ______ (dance) all night.", o: ["danced", "dance", "dancing", "dances"], a: 0},
-    {q: "He ______ (sleep) well.", o: ["slept", "sleep", "sleeping", "sleeps"], a: 0},
-    {q: "I ______ (wake) up early.", o: ["woke", "wake", "waking", "woken"], a: 0},
-    {q: "She ______ (get) up late.", o: ["got", "get", "getting", "gotten"], a: 0},
-    {q: "We ______ (wash) the car.", o: ["washed", "wash", "washing", "washes"], a: 0},
-    {q: "They ______ (clean) the house.", o: ["cleaned", "clean", "cleaning", "cleans"], a: 0},
-    {q: "He ______ (fix) the bike.", o: ["fixed", "fix", "fixing", "fixes"], a: 0},
-    {q: "I ______ (cook) dinner.", o: ["cooked", "cook", "cooking", "cooks"], a: 0},
-    {q: "She ______ (bake) bread.", o: ["baked", "bake", "baking", "bakes"], a: 0},
-    {q: "We ______ (buy) food.", o: ["bought", "buy", "buying", "buys"], a: 0},
-    {q: "They ______ (sell) books.", o: ["sold", "sell", "selling", "sells"], a: 0}
-];
+    // --- 400 SORU HAVUZU (Tüm veriler burada) ---
+    const quizData = {
+        block1: [
+            { "q": "No, I ______ Spanish. I am Italian.", "o": ["isn't", "aren't", "'m not", "not"], "a": 2 },
+            { "q": "Where ______ they from?", "o": ["is", "am", "be", "are"], "a": 3 },
+            { "q": "This is my brother. ______ name is Ahmet.", "o": ["Her", "His", "He", "Him"], "a": 1 },
+            { "q": "Are ______ your keys over there?", "o": ["this", "these", "those", "that"], "a": 2 },
+            { "q": "______ is a pen in my bag.", "o": ["There", "They", "It", "This"], "a": 0 },
+            { "q": "She is from Turkey. She is ______.", "o": ["Turkey", "Turkish", "Turk", "Turkeyish"], "a": 1 },
+            { "q": "He is from ______. He is German.", "o": ["Germany", "German", "France", "Poland"], "a": 0 },
+            { "q": "Can I have a ______ ticket, please?", "o": ["one", "single", "way", "go"], "a": 1 },
+            { "q": "Look at ______ photo here.", "o": ["those", "that", "this", "these"], "a": 2 },
+            { "q": "It is ______ ID card.", "o": ["a", "an", "two", "the"], "a": 1 },
+            { "q": "Is that ______ car?", "o": ["you", "yours", "your", "you're"], "a": 2 },
+            { "q": "My father's brother is my ______.", "o": ["aunt", "uncle", "cousin", "grandfather"], "a": 1 },
+            { "q": "I ______ coffee every morning.", "o": ["drink", "drinks", "drinking", "to drink"], "a": 0 },
+            { "q": "She ______ in a hospital.", "o": ["work", "working", "works", "is work"], "a": 2 },
+            { "q": "______ you like chocolate?", "o": ["Are", "Is", "Do", "Does"], "a": 2 },
+            { "q": "He ______ not play football.", "o": ["do", "does", "is", "has"], "a": 1 },
+            { "q": "What time ______ the film start?", "o": ["do", "is", "does", "are"], "a": 2 },
+            { "q": "I usually ______ up at 7 o'clock.", "o": ["go", "get", "have", "make"], "a": 1 },
+            { "q": "They ______ breakfast at home.", "o": ["has", "haves", "have", "having"], "a": 2 },
+            { "q": "It is half ______ eight. (8:30)", "o": ["to", "past", "of", "after"], "a": 1 },
+            { "q": "A waiter ______ in a restaurant.", "o": ["work", "works", "working", "worker"], "a": 1 },
+            { "q": "We ______ usually go to the cinema on Mondays.", "o": ["don't", "doesn't", "aren't", "isn't"], "a": 0 },
+            { "q": "My brother ______ got a new car.", "o": ["have", "has", "is", "does"], "a": 1 },
+            { "q": "______ you got any sisters?", "o": ["Do", "Has", "Have", "Are"], "a": 2 },
+            { "q": "They ______ got a big house.", "o": ["haven't", "hasn't", "don't", "doesn't"], "a": 0 },
+            { "q": "He is very ______; he talks to everyone.", "o": ["quiet", "talkative", "kind", "serious"], "a": 1 },
+            { "q": "My sister's daughter is my ______.", "o": ["nephew", "cousin", "niece", "sister"], "a": 2 },
+            { "q": "I am ______ tired today.", "o": ["very", "many", "much", "lot"], "a": 0 },
+            { "q": "How ______ going to the park?", "o": ["do", "are", "about", "is"], "a": 2 },
+            { "q": "Are you ______ tomorrow evening?", "o": ["free", "empty", "open", "loose"], "a": 0 },
+            { "q": "Let's ______ to the cinema.", "o": ["going", "go", "goes", "to go"], "a": 1 },
+            { "q": "She is never ______ class.", "o": ["late for", "late to", "late at", "late with"], "a": 0 },
+            { "q": "I ______ read magazines.", "o": ["no", "not", "don't", "doesn't"], "a": 2 },
+            { "q": "What ______ does the shop open?", "o": ["hour", "time", "clock", "watch"], "a": 1 },
+            { "q": "Can I have a ______ of water, please?", "o": ["bottle", "packet", "box", "piece"], "a": 0 },
+            { "q": "She is ______ intelligent student.", "o": ["a", "an", "the", "two"], "a": 1 },
+            { "q": "______ keys are these?", "o": ["Who", "Who's", "Whose", "Which"], "a": 2 },
+            { "q": "I don't like ______ TV.", "o": ["watch", "watching", "watches", "watched"], "a": 1 },
+            { "q": "He ______ to music every day.", "o": ["listen", "listens", "listening", "listener"], "a": 1 },
+            { "q": "______ father is a doctor.", "o": ["Ali", "Ali's", "Alis", "Alis'"], "a": 1 },
+            { "q": "We are form ______.", "o": ["Japan", "Japanese", "Japanish", "Japans"], "a": 0 },
+            { "q": "Is ______ your bag?", "o": ["this", "these", "those", "they"], "a": 0 },
+            { "q": "Where ______ you work?", "o": ["are", "is", "do", "does"], "a": 2 },
+            { "q": "She ______ not live here.", "o": ["do", "does", "is", "has"], "a": 1 },
+            { "q": "I have ______ brothers.", "o": ["two", "twice", "second", "couple"], "a": 0 },
+            { "q": "My mother ______ cooking.", "o": ["like", "likes", "liking", "is like"], "a": 1 },
+            { "q": "Do you want to ______ dinner?", "o": ["have", "do", "take", "go"], "a": 0 },
+            { "q": "He works ______ an office.", "o": ["on", "at", "in", "to"], "a": 2 },
+            { "q": "We go to school ______ bus.", "o": ["in", "on", "by", "with"], "a": 2 },
+            { "q": "It's quarter ______ ten. (10:15)", "o": ["to", "past", "after", "over"], "a": 1 },
+            { "q": "She ______ up at 6:00.", "o": ["get", "gets", "getting", "got"], "a": 1 },
+            { "q": "______ you like a coffee?", "o": ["Do", "Would", "Are", "Can"], "a": 1 },
+            { "q": "No, I ______ got any money.", "o": ["don't", "haven't", "hasn't", "didn't"], "a": 1 },
+            { "q": "My ______ names are Ali and Ayşe.", "o": ["parents", "parent's", "parents'", "parent"], "a": 2 },
+            { "q": "Is she ______ sister?", "o": ["you", "your", "yours", "you're"], "a": 1 },
+            { "q": "I use my computer ______ the evening.", "o": ["in", "on", "at", "to"], "a": 0 },
+            { "q": "They ______ lunch at 12:30.", "o": ["eat", "eats", "eating", "eaten"], "a": 0 },
+            { "q": "Can you ______ Italian?", "o": ["speak", "say", "talk", "tell"], "a": 0 },
+            { "q": "This is ______ university.", "o": ["a", "an", "the", "two"], "a": 0 },
+            { "q": "______ old are you?", "o": ["What", "How", "When", "Who"], "a": 1 },
+            { "q": "______ is your job?", "o": ["How", "Which", "What", "Who"], "a": 2 },
+            { "q": "He is a ______.", "o": ["drive", "driver", "driving", "drives"], "a": 1 },
+            { "q": "She ______ shopping on Saturdays.", "o": ["goes", "go", "going", "gone"], "a": 0 },
+            { "q": "I love ______ tennis.", "o": ["play", "playing", "plays", "played"], "a": 1 },
+            { "q": "______ phone number is 555-1234.", "o": ["I", "My", "Mine", "Me"], "a": 1 },
+            { "q": "Are you ______ holiday?", "o": ["in", "on", "at", "to"], "a": 1 },
+            { "q": "Can I have a ______ of tea?", "o": ["cup", "glass", "bottle", "plate"], "a": 0 },
+            { "q": "I ______ breakfast at 8:00.", "o": ["have", "has", "having", "had"], "a": 0 },
+            { "q": "Is he ______ friend?", "o": ["Mary", "Marys", "Mary's", "Maries"], "a": 2 },
+            { "q": "We live ______ Istanbul.", "o": ["on", "at", "in", "to"], "a": 2 },
+            { "q": "______ usually warm in summer.", "o": ["It", "It's", "Its", "Is"], "a": 1 },
+            { "q": "I am ______ student.", "o": ["a", "an", "the", "one"], "a": 0 },
+            { "q": "______ they speak English?", "o": ["Are", "Do", "Does", "Is"], "a": 1 },
+            { "q": "Where ______ she live?", "o": ["do", "does", "is", "are"], "a": 1 },
+            { "q": "He ______ glasses.", "o": ["wears", "wear", "wearing", "is wear"], "a": 0 },
+            { "q": "______ is that woman?", "o": ["Who", "What", "Which", "When"], "a": 0 },
+            { "q": "I'm sorry, I ______ know.", "o": ["not", "aren't", "don't", "doesn't"], "a": 2 },
+            { "q": "Excuse ______.", "o": ["I", "my", "me", "mine"], "a": 2 },
+            { "q": "Can you help ______?", "o": ["I", "my", "me", "mine"], "a": 2 },
+            { "q": "Thanks ______.", "o": ["many", "a lot", "very", "much"], "a": 1 },
+            { "q": "See you ______.", "o": ["later", "lates", "latest", "late"], "a": 0 },
+            { "q": "______ nice day!", "o": ["Have a", "Has a", "Make a", "Do a"], "a": 0 },
+            { "q": "Good ______.", "o": ["night", "nights", "knights", "night time"], "a": 0 },
+            { "q": "He is ______ engineer.", "o": ["a", "an", "the", "one"], "a": 1 },
+            { "q": "They are ______ teachers.", "o": ["a", "an", "-", "one"], "a": 2 },
+            { "q": "Is ______ your pen?", "o": ["this", "these", "those", "they"], "a": 0 },
+            { "q": "Look at ______ birds in the sky.", "o": ["this", "that", "these", "those"], "a": 3 },
+            { "q": "My bag is ______ the table.", "o": ["on", "in", "at", "to"], "a": 0 },
+            { "q": "She is ______ home.", "o": ["on", "in", "at", "to"], "a": 2 },
+            { "q": "I ______ like football.", "o": ["no", "not", "don't", "doesn't"], "a": 2 },
+            { "q": "______ she work here?", "o": ["Do", "Does", "Is", "Are"], "a": 1 },
+            { "q": "They ______ married.", "o": ["is", "am", "are", "be"], "a": 2 },
+            { "q": "We ______ happy.", "o": ["is", "am", "are", "be"], "a": 2 },
+            { "q": "Is it ______ dog?", "o": ["you", "your", "yours", "you're"], "a": 1 },
+            { "q": "This book is ______.", "o": ["my", "mine", "me", "I"], "a": 1 },
+            { "q": "That car is ______.", "o": ["her", "hers", "she", "shes"], "a": 1 },
+            { "q": "Are those shoes ______?", "o": ["your", "yours", "you", "you're"], "a": 1 },
+            { "q": "He ______ got blue eyes.", "o": ["have", "has", "is", "does"], "a": 1 },
+            { "q": "I ______ got a problem.", "o": ["have", "has", "am", "do"], "a": 0 }
+        ],
+        block2: [
+            { "q": "There aren't ______ pictures on the wall.", "o": ["some", "a", "any", "the"], "a": 2 },
+            { "q": "The lamp is ______ to the television.", "o": ["next", "near", "by", "on"], "a": 0 },
+            { "q": "You ______ buy stamps at the post office.", "o": ["can", "are", "have", "do"], "a": 0 },
+            { "q": "Can I have this shirt in ______, please?", "o": ["large", "big", "grand", "heavy"], "a": 0 },
+            { "q": "Where can I borrow a book? At the ______.", "o": ["bookshop", "library", "pharmacy", "newsagent"], "a": 1 },
+            { "q": "______ there any chairs in the kitchen?", "o": ["Is", "Are", "Do", "Have"], "a": 1 },
+            { "q": "Is there a supermarket ______ here?", "o": ["near", "next", "opposite to", "front"], "a": 0 },
+            { "q": "I would like ______ apple, please.", "o": ["a", "an", "some", "any"], "a": 1 },
+            { "q": "We haven't got ______ milk.", "o": ["some", "a", "any", "many"], "a": 2 },
+            { "q": "How ______ eggs do we need?", "o": ["much", "many", "any", "some"], "a": 1 },
+            { "q": "How ______ water is in the bottle?", "o": ["much", "many", "long", "big"], "a": 0 },
+            { "q": "A ______ of cereal.", "o": ["can", "bottle", "packet", "jar"], "a": 2 },
+            { "q": "Can I see the ______, please?", "o": ["bill", "menu", "order", "chef"], "a": 1 },
+            { "q": "I don't eat meat. I am a ______.", "o": ["vegetables", "vegetarian", "veganist", "salad"], "a": 1 },
+            { "q": "There is ______ cheese on the table.", "o": ["some", "a", "many", "few"], "a": 0 },
+            { "q": "I ______ at home yesterday.", "o": ["am", "was", "were", "be"], "a": 1 },
+            { "q": "Where ______ you born?", "o": ["was", "were", "did", "are"], "a": 1 },
+            { "q": "She ______ to Paris last year.", "o": ["go", "goes", "went", "goed"], "a": 2 },
+            { "q": "We ______ play football on Saturday.", "o": ["didn't", "don't", "wasn't", "weren't"], "a": 0 },
+            { "q": "I met my husband three years ______.", "o": ["last", "ago", "past", "before"], "a": 1 },
+            { "q": "When did you ______ school?", "o": ["start", "started", "starting", "starts"], "a": 0 },
+            { "q": "They ______ married in 2010.", "o": ["got", "went", "did", "had"], "a": 0 },
+            { "q": "______ was your weekend?", "o": ["What", "How", "When", "Who"], "a": 1 },
+            { "q": "Is there ______ sugar?", "o": ["a", "any", "many", "few"], "a": 1 },
+            { "q": "Can I have a ______ of coffee?", "o": ["cup", "plate", "spoon", "fork"], "a": 0 },
+            { "q": "There are ______ apples.", "o": ["much", "a little", "a lot of", "any"], "a": 2 },
+            { "q": "He ______ a new car yesterday.", "o": ["buy", "buys", "bought", "buying"], "a": 2 },
+            { "q": "Did you ______ the film?", "o": ["watch", "watched", "watching", "watches"], "a": 0 },
+            { "q": "I ______ very happy last night.", "o": ["was", "were", "am", "did"], "a": 0 },
+            { "q": "They ______ at the party.", "o": ["wasn't", "weren't", "didn't", "isn't"], "a": 1 },
+            { "q": "Where ______ you go?", "o": ["did", "do", "were", "was"], "a": 0 },
+            { "q": "We ______ pizza last night.", "o": ["eat", "eats", "ate", "eaten"], "a": 2 },
+            { "q": "She ______ study for the exam.", "o": ["didn't", "doesn't", "wasn't", "isn't"], "a": 0 },
+            { "q": "______ many people were there?", "o": ["How", "What", "When", "Which"], "a": 0 },
+            { "q": "There ______ a lot of people.", "o": ["was", "were", "did", "had"], "a": 1 },
+            { "q": "I ______ born in 1990.", "o": ["am", "was", "were", "did"], "a": 1 },
+            { "q": "She ______ a shower this morning.", "o": ["have", "has", "had", "haves"], "a": 2 },
+            { "q": "We ______ to the beach.", "o": ["drove", "drive", "driven", "driving"], "a": 0 },
+            { "q": "He ______ his keys.", "o": ["lose", "lost", "losing", "loses"], "a": 1 },
+            { "q": "Can I have a ______ of cake?", "o": ["piece", "bottle", "jar", "can"], "a": 0 },
+            { "q": "Have we got ______ bread?", "o": ["some", "any", "many", "a"], "a": 1 },
+            { "q": "There is a ______ of jam.", "o": ["jar", "packet", "box", "bag"], "a": 0 },
+            { "q": "I would like to ______ a table.", "o": ["book", "buy", "sell", "give"], "a": 0 },
+            { "q": "The service was ______.", "o": ["excellent", "excellence", "excellently", "excel"], "a": 0 },
+            { "q": "Did you leave a ______ for the waiter?", "o": ["tip", "top", "tap", "bill"], "a": 0 },
+            { "q": "Are you ready to ______?", "o": ["order", "buy", "sell", "cook"], "a": 0 },
+            { "q": "I'll ______ the chicken.", "o": ["have", "eat", "drink", "cook"], "a": 0 },
+            { "q": "______ sort of vegetables do you have?", "o": ["What", "How", "When", "Who"], "a": 0 },
+            { "q": "Nothing for me, ______.", "o": ["thanks", "please", "welcome", "sorry"], "a": 0 },
+            { "q": "Can we have the ______, please?", "o": ["bill", "money", "cost", "price"], "a": 0 },
+            { "q": "The soup is too ______.", "o": ["salty", "salt", "salts", "salting"], "a": 0 },
+            { "q": "I like ______ food.", "o": ["spicy", "spice", "spices", "spicing"], "a": 0 },
+            { "q": "Do you eat ______ fish?", "o": ["fresh", "new", "young", "clean"], "a": 0 },
+            { "q": "She ______ breakfast every day.", "o": ["makes", "does", "has", "gets"], "a": 2 },
+            { "q": "Can you ______ the time, please?", "o": ["tell", "say", "speak", "talk"], "a": 0 },
+            { "q": "It's twenty ______ five. (5:20)", "o": ["past", "to", "after", "before"], "a": 0 },
+            { "q": "What ______ do you get up?", "o": ["time", "hour", "clock", "watch"], "a": 0 },
+            { "q": "There is a mirror ______ the wall.", "o": ["on", "in", "at", "to"], "a": 0 },
+            { "q": "The cat is ______ the table.", "o": ["under", "in", "at", "to"], "a": 0 },
+            { "q": "I live in a ______.", "o": ["flat", "apartment", "house", "home"], "a": 0 },
+            { "q": "My bedroom has a big ______.", "o": ["window", "wall", "floor", "door"], "a": 0 },
+            { "q": "Is there a ______ machine?", "o": ["washing", "wash", "washed", "washer"], "a": 0 },
+            { "q": "The kitchen is very ______.", "o": ["small", "little", "tiny", "short"], "a": 0 },
+            { "q": "We need some ______ for the living room.", "o": ["furniture", "furnitures", "table", "chair"], "a": 0 },
+            { "q": "I keep my clothes in the ______.", "o": ["wardrobe", "cupboard", "shelf", "drawer"], "a": 0 },
+            { "q": "Can you turn ______ the light?", "o": ["on", "in", "at", "to"], "a": 0 },
+            { "q": "There ______ two bedrooms.", "o": ["are", "is", "be", "am"], "a": 0 },
+            { "q": "Is there ______ balcony?", "o": ["a", "an", "some", "any"], "a": 0 },
+            { "q": "The bathroom is ______ the bedroom.", "o": ["next to", "next", "near to", "near of"], "a": 0 },
+            { "q": "There is a plant ______ the corner.", "o": ["in", "on", "at", "to"], "a": 0 },
+            { "q": "I ______ speak French.", "o": ["can", "can to", "cans", "canning"], "a": 0 },
+            { "q": "______ you help me?", "o": ["Can", "Do", "Have", "Are"], "a": 0 },
+            { "q": "She ______ swim very well.", "o": ["can't", "no can", "can not", "dont can"], "a": 0 },
+            { "q": "We ______ go to the park.", "o": ["can", "are", "have", "do"], "a": 0 },
+            { "q": "What ______ I do for you?", "o": ["can", "do", "have", "are"], "a": 0 },
+            { "q": "How much ______ that?", "o": ["is", "are", "do", "does"], "a": 0 },
+            { "q": "Have you got this in ______?", "o": ["red", "read", "reed", "rad"], "a": 0 },
+            { "q": "I'll ______ it.", "o": ["take", "buy", "have", "get"], "a": 0 },
+            { "q": "Where is the changing ______?", "o": ["room", "place", "area", "space"], "a": 0 },
+            { "q": "Do you accept ______ cards?", "o": ["credit", "money", "bank", "cash"], "a": 0 },
+            { "q": "Enter your ______ code.", "o": ["PIN", "pen", "pan", "pun"], "a": 0 },
+            { "q": "Here is your ______.", "o": ["receipt", "recipe", "receive", "reception"], "a": 0 },
+            { "q": "That's ______ expensive.", "o": ["too", "to", "two", "enough"], "a": 0 },
+            { "q": "It doesn't ______.", "o": ["fit", "suit", "match", "go"], "a": 0 },
+            { "q": "What ______ are you?", "o": ["size", "number", "big", "long"], "a": 0 },
+            { "q": "I'm just ______.", "o": ["looking", "watching", "seeing", "viewing"], "a": 0 },
+            { "q": "Can I ______ it on?", "o": ["try", "put", "wear", "get"], "a": 0 },
+            { "q": "The shop is ______.", "o": ["closed", "close", "closing", "closure"], "a": 0 },
+            { "q": "It opens ______ 9:00.", "o": ["at", "on", "in", "to"], "a": 0 },
+            { "q": "Let's go ______.", "o": ["shopping", "shop", "shopped", "shopper"], "a": 0 },
+            { "q": "I need to buy a ______.", "o": ["gift", "give", "giving", "gave"], "a": 0 },
+            { "q": "Is it on ______?", "o": ["sale", "sell", "sold", "sales"], "a": 0 },
+            { "q": "How ______ does it cost?", "o": ["much", "many", "price", "money"], "a": 0 },
+            { "q": "I have ______ money.", "o": ["no", "not", "none", "nothing"], "a": 0 },
+            { "q": "Can I pay ______ cash?", "o": ["in", "on", "by", "with"], "a": 0 },
+            { "q": "Do you have ______ change?", "o": ["any", "some", "a", "no"], "a": 0 },
+            { "q": "Keep the ______.", "o": ["change", "money", "cash", "coin"], "a": 0 },
+            { "q": "I want to ______ this.", "o": ["return", "back", "give", "take"], "a": 0 }
+        ],
+        block3: [
+            { "q": "This hotel is ______ expensive than the hostel.", "o": ["more", "most", "very", "much"], "a": 0 },
+            { "q": "It is the ______ city in the world.", "o": ["big", "bigger", "biggest", "most big"], "a": 2 },
+            { "q": "The market was very ______; there were too many people.", "o": ["empty", "quiet", "crowded", "boring"], "a": 2 },
+            { "q": "Go ______ on and turn left.", "o": ["straight", "street", "right", "forward"], "a": 0 },
+            { "q": "The beach is the ______ place to relax.", "o": ["good", "better", "best", "goodest"], "a": 2 },
+            { "q": "A desert is hot and ______.", "o": ["wet", "dry", "cold", "green"], "a": 1 },
+            { "q": "Is it ______ from here?", "o": ["long", "far", "distance", "away"], "a": 1 },
+            { "q": "I ______ dinner at the moment.", "o": ["cook", "cooking", "am cooking", "cooks"], "a": 2 },
+            { "q": "She usually wears jeans, but today she ______ a dress.", "o": ["wears", "wearing", "is wearing", "wear"], "a": 2 },
+            { "q": "He ______ to the radio.", "o": ["is listening", "listening", "listens", "listen"], "a": 0 },
+            { "q": "I am waiting ______ the bus.", "o": ["to", "for", "at", "on"], "a": 1 },
+            { "q": "She has got long, ______ hair.", "o": ["curly", "slim", "tall", "beard"], "a": 0 },
+            { "q": "He is ______ overweight.", "o": ["a bit", "a lot", "much", "many"], "a": 0 },
+            { "q": "What ______ you doing?", "o": ["do", "are", "is", "can"], "a": 1 },
+            { "q": "I ______ this film is boring.", "o": ["thinking", "think", "am thinking", "thinks"], "a": 1 },
+            { "q": "You ______ show your passport at the border.", "o": ["has to", "have to", "can", "don't have to"], "a": 1 },
+            { "q": "You ______ smoke on the plane.", "o": ["can", "don't have to", "can't", "have to"], "a": 2 },
+            { "q": "I go to work by ______ bus.", "o": ["a", "the", "-", "an"], "a": 2 },
+            { "q": "Excuse me, I am looking for ______ city centre.", "o": ["a", "the", "-", "an"], "a": 1 },
+            { "q": "We need to get ______ the train at the next station.", "o": ["out", "off", "from", "away"], "a": 1 },
+            { "q": "I am very ______ I am late.", "o": ["apology", "sorry", "afraid", "excuse"], "a": 1 },
+            { "q": "You ______ pay for the museum; it is free.", "o": ["have to", "can't", "don't have to", "mustn't"], "a": 2 },
+            { "q": "______ bicycles are dangerous in this city.", "o": ["A", "The", "-", "This"], "a": 2 },
+            { "q": "Summer is ______ than winter.", "o": ["hot", "hotter", "hottest", "more hot"], "a": 1 },
+            { "q": "My car is ______ than yours.", "o": ["old", "older", "oldest", "more old"], "a": 1 },
+            { "q": "This is the ______ restaurant in town.", "o": ["expensive", "more expensive", "most expensive", "expensivest"], "a": 2 },
+            { "q": "London is ______ expensive than Istanbul.", "o": ["more", "most", "as", "so"], "a": 0 },
+            { "q": "She is the ______ student in the class.", "o": ["good", "better", "best", "well"], "a": 2 },
+            { "q": "It was the ______ holiday of my life.", "o": ["bad", "worse", "worst", "baddest"], "a": 2 },
+            { "q": "The streets are very ______.", "o": ["noise", "noisy", "noisily", "noises"], "a": 1 },
+            { "q": "The hotel was ______ and clean.", "o": ["comfort", "comfortable", "comfortably", "comforting"], "a": 1 },
+            { "q": "How ______ is the beach?", "o": ["far", "long", "distance", "way"], "a": 0 },
+            { "q": "Turn ______ at the traffic lights.", "o": ["right", "write", "rite", "light"], "a": 0 },
+            { "q": "Go ______ the bridge.", "o": ["over", "on", "in", "at"], "a": 0 },
+            { "q": "It's on the ______.", "o": ["left", "lift", "leave", "leaf"], "a": 0 },
+            { "q": "Look! It ______.", "o": ["rains", "raining", "is raining", "rain"], "a": 2 },
+            { "q": "Why are you ______?", "o": ["run", "running", "runs", "ran"], "a": 1 },
+            { "q": "He ______ a suit today.", "o": ["wearing", "is wearing", "wears", "wear"], "a": 1 },
+            { "q": "They ______ TV at the moment.", "o": ["watch", "watching", "are watching", "watches"], "a": 2 },
+            { "q": "I ______ understand.", "o": ["no", "not", "don't", "doesn't"], "a": 2 },
+            { "q": "She ______ like fish.", "o": ["no", "not", "don't", "doesn't"], "a": 3 },
+            { "q": "Look at ______.", "o": ["he", "him", "his", "himself"], "a": 1 },
+            { "q": "Wait ______ me!", "o": ["to", "for", "at", "on"], "a": 1 },
+            { "q": "I am looking ______ my keys.", "o": ["for", "at", "to", "after"], "a": 0 },
+            { "q": "He is ______ tall.", "o": ["quite", "quiet", "quit", "quites"], "a": 0 },
+            { "q": "She has ______ hair.", "o": ["blonde", "blondie", "yellow", "gold"], "a": 0 },
+            { "q": "He has a ______.", "o": ["beard", "bird", "board", "bored"], "a": 0 },
+            { "q": "She is ______.", "o": ["slim", "thin", "skinny", "fat"], "a": 0 },
+            { "q": "I ______ go now.", "o": ["have to", "has to", "must to", "can to"], "a": 0 },
+            { "q": "Do you ______ work on Sundays?", "o": ["have to", "must", "should", "can"], "a": 0 },
+            { "q": "We ______ be late.", "o": ["mustn't", "don't have to", "haven't to", "not must"], "a": 0 },
+            { "q": "You ______ drive fast here.", "o": ["can't", "don't have to", "not can", "no can"], "a": 0 },
+            { "q": "I travel ______ train.", "o": ["by", "on", "in", "with"], "a": 0 },
+            { "q": "Get ______ the bus at the stop.", "o": ["on", "in", "at", "to"], "a": 0 },
+            { "q": "The plane takes ______ at 10:00.", "o": ["off", "up", "on", "out"], "a": 0 },
+            { "q": "I missed the ______.", "o": ["flight", "fly", "flying", "flew"], "a": 0 },
+            { "q": "Where is check-in ______?", "o": ["desk", "table", "chair", "room"], "a": 0 },
+            { "q": "Do you have any ______ luggage?", "o": ["hand", "arm", "finger", "body"], "a": 0 },
+            { "q": "Show me your ______ pass.", "o": ["boarding", "board", "border", "bored"], "a": 0 },
+            { "q": "The flight is ______.", "o": ["delayed", "delay", "late", "later"], "a": 0 },
+            { "q": "______ Moon is beautiful.", "o": ["The", "A", "An", "-"], "a": 0 },
+            { "q": "I saw ______ elephant.", "o": ["an", "a", "the", "-"], "a": 0 },
+            { "q": "______ life is beautiful.", "o": ["-", "The", "A", "An"], "a": 0 },
+            { "q": "I like ______ music.", "o": ["-", "the", "a", "an"], "a": 0 },
+            { "q": "Can you play ______ guitar?", "o": ["the", "a", "-", "an"], "a": 0 },
+            { "q": "I recommend ______ book.", "o": ["this", "these", "those", "here"], "a": 0 },
+            { "q": "It's a ______ film.", "o": ["horror", "horrible", "terror", "afraid"], "a": 0 },
+            { "q": "Do you like ______ films?", "o": ["action", "active", "acting", "actor"], "a": 0 },
+            { "q": "I prefer ______.", "o": ["comedies", "comedy", "comic", "comedian"], "a": 0 },
+            { "q": "The film was ______.", "o": ["boring", "bored", "bore", "bores"], "a": 0 },
+            { "q": "I was ______.", "o": ["bored", "boring", "bore", "bores"], "a": 0 },
+            { "q": "It is ______ interesting.", "o": ["very", "much", "many", "lot"], "a": 0 },
+            { "q": "She is ______ friendly.", "o": ["really", "real", "reality", "reals"], "a": 0 },
+            { "q": "He drives ______.", "o": ["carefully", "careful", "care", "caring"], "a": 0 },
+            { "q": "She speaks ______.", "o": ["quickly", "quick", "fastly", "fasts"], "a": 0 },
+            { "q": "He works ______.", "o": ["hard", "hardly", "hardness", "hards"], "a": 0 },
+            { "q": "It rains ______.", "o": ["heavily", "heavy", "heave", "heaves"], "a": 0 },
+            { "q": "The bus is ______.", "o": ["late", "lately", "later", "latest"], "a": 0 },
+            { "q": "The train is ______.", "o": ["early", "earlier", "earliest", "ears"], "a": 0 },
+            { "q": "We arrived ______.", "o": ["safely", "safe", "safety", "saves"], "a": 0 },
+            { "q": "Please listen ______.", "o": ["carefully", "careful", "care", "caring"], "a": 0 },
+            { "q": "Don't walk so ______.", "o": ["fast", "fastly", "quick", "rapid"], "a": 0 },
+            { "q": "I study ______.", "o": ["English", "England", "Englishly", "Eng"], "a": 0 },
+            { "q": "My father is ______.", "o": ["taller", "tall", "tallest", "more tall"], "a": 0 },
+            { "q": "Your car is ______ than mine.", "o": ["better", "good", "best", "gooder"], "a": 0 },
+            { "q": "This is the ______ day.", "o": ["happiest", "happy", "happier", "most happy"], "a": 0 },
+            { "q": "Which is the ______?", "o": ["cheapest", "cheap", "cheaper", "more cheap"], "a": 0 },
+            { "q": "Who is the ______?", "o": ["oldest", "old", "older", "elder"], "a": 0 },
+            { "q": "Mount Everest is the ______ mountain.", "o": ["highest", "high", "higher", "most high"], "a": 0 },
+            { "q": "The Nile is the ______ river.", "o": ["longest", "long", "longer", "most long"], "a": 0 },
+            { "q": "Russia is the ______ country.", "o": ["largest", "large", "larger", "most large"], "a": 0 },
+            { "q": "That is the ______ joke.", "o": ["funniest", "funny", "funnier", "most funny"], "a": 0 },
+            { "q": "It was the ______ exam.", "o": ["most difficult", "difficult", "more difficult", "difficulter"], "a": 0 },
+            { "q": "She is the ______ person.", "o": ["most beautiful", "beautiful", "more beautiful", "beautifuller"], "a": 0 },
+            { "q": "This is the ______ place.", "o": ["worst", "bad", "worse", "baddest"], "a": 0 },
+            { "q": "It is ______ cold today.", "o": ["too", "to", "two", "enough"], "a": 0 },
+            { "q": "I am not ______.", "o": ["strong enough", "enough strong", "strong too", "too strong"], "a": 0 },
+            { "q": "It is ______ expensive.", "o": ["too", "to", "two", "enough"], "a": 0 }
+        ],
+        block4: [
+            { "q": "I ______ to visit my parents this weekend.", "o": ["go", "going", "am going", "will"], "a": 2 },
+            { "q": "She ______ like to be a doctor.", "o": ["will", "would", "is", "can"], "a": 1 },
+            { "q": "It ______ rain tomorrow.", "o": ["might", "going to", "is", "has"], "a": 0 },
+            { "q": "Don't forget your umbrella; you might get ______.", "o": ["wet", "dry", "lost", "stung"], "a": 0 },
+            { "q": "What are you ______ do later?", "o": ["go to", "going to", "go", "going"], "a": 1 },
+            { "q": "See you ______.", "o": ["later", "yesterday", "last", "past"], "a": 0 },
+            { "q": "It is ______ and sunny today.", "o": ["hot", "cold", "rain", "snow"], "a": 0 },
+            { "q": "I ______ call you back.", "o": ["am", "will", "going to", "do"], "a": 1 },
+            { "q": "You ______ see a doctor.", "o": ["should", "can to", "have", "do"], "a": 0 },
+            { "q": "I have a pain in my ______.", "o": ["head", "headache", "dizzy", "cough"], "a": 0 },
+            { "q": "He speaks English very ______.", "o": ["good", "well", "bad", "slow"], "a": 1 },
+            { "q": "You shouldn't ______ heavy boxes.", "o": ["lift", "lifting", "lifts", "to lift"], "a": 0 },
+            { "q": "Please walk ______.", "o": ["slow", "slowly", "slows", "slowing"], "a": 1 },
+            { "q": "I have a ______ throat.", "o": ["hurt", "pain", "sore", "sick"], "a": 2 },
+            { "q": "Let me ______ you with that.", "o": ["help", "to help", "helping", "helps"], "a": 0 },
+            { "q": "She has a ______ nose.", "o": ["running", "run", "runny", "ran"], "a": 2 },
+            { "q": "Have you ______ been to Italy?", "o": ["ever", "never", "always", "yet"], "a": 0 },
+            { "q": "I have ______ sushi.", "o": ["eat", "ate", "eaten", "eating"], "a": 2 },
+            { "q": "She ______ climbed a mountain.", "o": ["has never", "have never", "doesn't", "didn't"], "a": 0 },
+            { "q": "I ______ to London in 2015.", "o": ["have been", "went", "go", "has gone"], "a": 1 },
+            { "q": "That was an ______ film.", "o": ["amaze", "amazed", "amazing", "amazement"], "a": 2 },
+            { "q": "She is a famous ______.", "o": ["music", "musical", "musician", "playing"], "a": 2 },
+            { "q": "I have been here ______ two years.", "o": ["since", "for", "ago", "in"], "a": 1 },
+            { "q": "Hello, ______ is Tom speaking.", "o": ["this", "that", "here", "I"], "a": 0 },
+            { "q": "We are ______ to have a party.", "o": ["go", "going", "gone", "will"], "a": 1 },
+            { "q": "I ______ like a coffee, please.", "o": ["would", "will", "can", "do"], "a": 0 },
+            { "q": "Maybe I ______ go out.", "o": ["will", "am", "have", "did"], "a": 0 },
+            { "q": "Watch out! You are ______ to fall.", "o": ["going", "go", "gone", "will"], "a": 0 },
+            { "q": "It is ______ to snow.", "o": ["going", "go", "gone", "will"], "a": 0 },
+            { "q": "I ______ help you with your bags.", "o": ["will", "am", "going", "have"], "a": 0 },
+            { "q": "I'm tired. I ______ go to bed.", "o": ["will", "am", "going", "have"], "a": 0 },
+            { "q": "Are you ______ to buy it?", "o": ["going", "go", "gone", "will"], "a": 0 },
+            { "q": "They ______ arrive at 5.", "o": ["might", "can to", "should to", "ought"], "a": 0 },
+            { "q": "I have a ______.", "o": ["headache", "head", "hurts", "pain"], "a": 0 },
+            { "q": "My back ______.", "o": ["hurts", "pain", "sore", "injured"], "a": 0 },
+            { "q": "I feel ______.", "o": ["sick", "sickness", "illness", "pain"], "a": 0 },
+            { "q": "Take this ______.", "o": ["medicine", "medical", "medic", "medicate"], "a": 0 },
+            { "q": "You ______ smoke.", "o": ["shouldn't", "don't should", "should not to", "no should"], "a": 0 },
+            { "q": "You ______ drink water.", "o": ["should", "should to", "ought", "must to"], "a": 0 },
+            { "q": "Why don't you ______ down?", "o": ["lie", "lay", "lied", "lying"], "a": 0 },
+            { "q": "He walks ______.", "o": ["dangerously", "dangerous", "danger", "dangers"], "a": 0 },
+            { "q": "She sings ______.", "o": ["beautifully", "beautiful", "beauty", "beauties"], "a": 0 },
+            { "q": "They play ______.", "o": ["badly", "bad", "badness", "bads"], "a": 0 },
+            { "q": "I ______ seen that film.", "o": ["have", "has", "did", "was"], "a": 0 },
+            { "q": "______ you visited Paris?", "o": ["Have", "Did", "Do", "Are"], "a": 0 },
+            { "q": "She ______ gone home.", "o": ["has", "have", "is", "did"], "a": 0 },
+            { "q": "We ______ finished.", "o": ["have", "has", "did", "are"], "a": 0 },
+            { "q": "I haven't ______ him.", "o": ["seen", "see", "saw", "seeing"], "a": 0 },
+            { "q": "Have you ______ the book?", "o": ["read", "red", "reading", "reader"], "a": 0 },
+            { "q": "I have ______ my keys.", "o": ["lost", "lose", "losing", "loses"], "a": 0 },
+            { "q": "She has ______ a letter.", "o": ["written", "wrote", "write", "writing"], "a": 0 },
+            { "q": "We have ______ a new car.", "o": ["bought", "buy", "buying", "buys"], "a": 0 },
+            { "q": "He has ______ to Spain.", "o": ["been", "be", "was", "were"], "a": 0 },
+            { "q": "I have ______ eaten octopus.", "o": ["never", "ever", "no", "not"], "a": 0 },
+            { "q": "Have you ______ played golf?", "o": ["ever", "never", "always", "yet"], "a": 0 },
+            { "q": "I have lived here ______ 2010.", "o": ["since", "for", "ago", "in"], "a": 0 },
+            { "q": "We have known him ______ ten years.", "o": ["for", "since", "ago", "in"], "a": 0 },
+            { "q": "She ______ lived here for a long time.", "o": ["has", "have", "is", "did"], "a": 0 },
+            { "q": "I saw him five minutes ______.", "o": ["ago", "since", "for", "past"], "a": 0 },
+            { "q": "Did you ______ him yesterday?", "o": ["see", "saw", "seen", "seeing"], "a": 0 },
+            { "q": "I ______ not go to work yesterday.", "o": ["did", "have", "do", "was"], "a": 0 },
+            { "q": "He ______ was at the party.", "o": ["-", "did", "has", "have"], "a": 0 },
+            { "q": "What ______ you do last night?", "o": ["did", "have", "were", "had"], "a": 0 },
+            { "q": "I ______ my leg last week.", "o": ["broke", "break", "broken", "breaking"], "a": 0 },
+            { "q": "Can I leave a ______?", "o": ["message", "messenger", "massage", "mess"], "a": 0 },
+            { "q": "I'll ______ you through.", "o": ["put", "pass", "send", "connect"], "a": 0 },
+            { "q": "Can I ______ to Jane?", "o": ["speak", "talk", "say", "tell"], "a": 0 },
+            { "q": "Who's ______?", "o": ["calling", "talking", "speaking", "saying"], "a": 0 },
+            { "q": "The line is ______.", "o": ["busy", "full", "occupied", "crowded"], "a": 0 },
+            { "q": "Hold ______ a moment.", "o": ["on", "in", "at", "to"], "a": 0 },
+            { "q": "I'll call ______ later.", "o": ["back", "return", "again", "repeat"], "a": 0 },
+            { "q": "Thanks for ______.", "o": ["calling", "call", "called", "calls"], "a": 0 },
+            { "q": "It was an ______ experience.", "o": ["exciting", "excited", "excite", "excitement"], "a": 0 },
+            { "q": "I was ______.", "o": ["excited", "exciting", "excite", "excitement"], "a": 0 },
+            { "q": "The view was ______.", "o": ["amazing", "amazed", "amaze", "amazement"], "a": 0 },
+            { "q": "I was ______ by the view.", "o": ["amazed", "amazing", "amaze", "amazement"], "a": 0 },
+            { "q": "It is ______ dark.", "o": ["getting", "going", "becoming", "doing"], "a": 0 },
+            { "q": "I got ______.", "o": ["lost", "lose", "losing", "loses"], "a": 0 },
+            { "q": "She got ______.", "o": ["married", "marry", "marries", "marriage"], "a": 0 },
+            { "q": "He is ______ famous.", "o": ["getting", "going", "doing", "making"], "a": 0 },
+            { "q": "Did you ______ a good time?", "o": ["have", "make", "do", "get"], "a": 0 },
+            { "q": "Have a ______ trip.", "o": ["safe", "safety", "save", "saving"], "a": 0 },
+            { "q": "It was a ______.", "o": ["disaster", "disastrous", "problem", "bad"], "a": 0 },
+            { "q": "I fell ______.", "o": ["over", "down", "off", "out"], "a": 0 },
+            { "q": "She fell ______ the stairs.", "o": ["down", "over", "off", "out"], "a": 0 },
+            { "q": "I dropped my ______.", "o": ["phone", "call", "ring", "dial"], "a": 0 },
+            { "q": "The screen is ______.", "o": ["broken", "break", "broke", "breaking"], "a": 0 },
+            { "q": "I need a ______.", "o": ["repair", "fix", "mend", "correct"], "a": 0 },
+            { "q": "It doesn't ______.", "o": ["work", "job", "do", "make"], "a": 0 },
+            { "q": "The battery is ______.", "o": ["dead", "die", "died", "death"], "a": 0 },
+            { "q": "I need to ______ it.", "o": ["charge", "load", "fill", "power"], "a": 0 },
+            { "q": "Do you have a ______?", "o": ["charger", "charge", "charging", "charged"], "a": 0 },
+            { "q": "Is there ______ wifi?", "o": ["free", "empty", "open", "loose"], "a": 0 },
+            { "q": "What is the ______?", "o": ["password", "pass", "word", "code"], "a": 0 },
+            { "q": "I can't ______ to the internet.", "o": ["connect", "join", "link", "attach"], "a": 0 },
+            { "q": "The signal is ______.", "o": ["weak", "week", "badly", "poorly"], "a": 0 },
+            { "q": "Can you ______ that?", "o": ["repeat", "say", "speak", "tell"], "a": 0 },
+            { "q": "I didn't ______ that.", "o": ["catch", "take", "hold", "get"], "a": 0 },
+            { "q": "Could you speak ______?", "o": ["up", "loud", "high", "top"], "a": 0 }
+        ]
+    };
 
-let gameQs = [], currentIdx = 0, correctCount = 0, wrongCount = 0;
+    // --- MANTIK ---
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let userNick = "Misafir";
 
-// DETERMINISTİK (SABİT) RASTGELE SAYI ÜRETİCİSİ
-// Bu fonksiyon her index (tohum) için hep aynı sonucu verir.
-// Örn: getSeededRandom(5) her zaman 0.823 verir.
-function getSeededRandom(seed) {
-    var x = Math.sin(seed + 1234) * 10000;
-    return x - Math.floor(x);
-}
+    function goToMenu() {
+        const inputVal = document.getElementById('nickname').value;
+        if(inputVal.trim() !== "") userNick = inputVal;
+        document.getElementById('display-nick').innerText = userNick;
+        showScreen('screen-menu');
+    }
 
-function startGame(count) {
-    let name = document.getElementById("username").value.trim();
-    if (!name) name = "Anonim";
-    
-    // Gelişmiş Sabit Karıştırma:
-    // Her sorunun şıklarını "soru numarasını" kullanarak karıştırır.
-    // Ahmet de, Mehmet de, Ayşe de 44. soruya geldiğinde aynı karışık şıkları görür.
-    gameQs = sourceQuestions.slice(0, count).map((item, index) => {
-        let options = [...item.o];
-        let correctAnswerText = options[0]; // Doğru cevap metni
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
         
-        // Bu soru için sabit bir karıştırma yapalım
-        // Fisher-Yates Shuffle ama sabit tohumlu (index)
-        for (let i = options.length - 1; i > 0; i--) {
-            // Rastgele sayıyı o anki index'e göre üret
-            let seed = index * 100 + i; 
-            let rnd = getSeededRandom(seed);
-            let j = Math.floor(rnd * (i + 1));
-            [options[i], options[j]] = [options[j], options[i]];
+        const backBtn = document.getElementById('back-btn');
+        if (screenId === 'screen-quiz') {
+            backBtn.style.display = 'flex';
+        } else {
+            backBtn.style.display = 'none';
         }
+    }
+
+    function startQuiz(blockKey) {
+        if (!quizData[blockKey]) { alert("Hata: Veri bulunamadı!"); return; }
+        currentQuestions = quizData[blockKey];
+        currentIndex = 0;
+        score = 0;
+        updateScore();
+        showScreen('screen-quiz');
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const q = currentQuestions[currentIndex];
+        document.getElementById('current-q').innerText = currentIndex + 1;
+        document.getElementById('total-q').innerText = currentQuestions.length;
+        document.getElementById('question-text').innerHTML = q.q;
         
-        // Şimdi doğru cevabın yeni yerini bulalım
-        let newAnswerIndex = options.indexOf(correctAnswerText);
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+
+        q.o.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = opt;
+            btn.onclick = () => checkAnswer(index, q.a, btn);
+            container.appendChild(btn);
+        });
+        document.getElementById('next-btn').style.display = 'none';
+    }
+
+    function checkAnswer(selectedIndex, correctIndex, btnElement) {
+        const buttons = document.querySelectorAll('.option-btn');
+        buttons.forEach(btn => btn.disabled = true);
+
+        if (selectedIndex === correctIndex) {
+            btnElement.classList.add('correct');
+            score++;
+        } else {
+            btnElement.classList.add('wrong');
+            buttons[correctIndex].classList.add('correct');
+        }
+        updateScore();
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentIndex++;
+        if (currentIndex < currentQuestions.length) {
+            showQuestion();
+        } else {
+            finishQuiz();
+        }
+    }
+
+    function updateScore() {
+        document.getElementById('score').innerText = score;
+    }
+
+    function finishQuiz() {
+        showScreen('screen-result');
+        document.getElementById('final-score').innerText = score;
+        const percentage = (score / currentQuestions.length) * 100;
+        let msg = "İyi Deneme!";
+        if(percentage >= 80) msg = "Harika İş!";
+        else if(percentage >= 50) msg = "Güzel!";
         
-        return {
-            q: item.q,
-            o: options,
-            a: newAnswerIndex
-        };
-    });
-    
-    document.getElementById("start-screen").classList.add("hidden");
-    document.getElementById("quiz-screen").classList.remove("hidden");
-    document.getElementById("stats-area").style.visibility = "visible";
-    
-    currentIdx = 0; correctCount = 0; wrongCount = 0;
-    updateStats();
-    showQuestion();
-}
+        document.getElementById('result-msg').innerText = `${msg} ${userNick}`;
+        document.getElementById('result-detail').innerText = `${currentQuestions.length} sorudan ${score} tanesini bildin.`;
+    }
 
-function showQuestion() {
-    let q = gameQs[currentIdx];
-    document.getElementById("progress").innerText = `${currentIdx + 1} / ${gameQs.length}`;
-    document.getElementById("question-text").innerText = `${currentIdx + 1}. ${q.q}`;
-    
-    let area = document.getElementById("options-area");
-    area.innerHTML = "";
-    document.getElementById("next-btn").style.display = "none";
-    
-    q.o.forEach((opt, idx) => {
-        let btn = document.createElement("button");
-        btn.className = "opt-btn";
-        btn.innerText = opt;
-        btn.onclick = () => checkAnswer(btn, idx, q.a);
-        area.appendChild(btn);
-    });
-}
-
-function checkAnswer(btn, idx, correct) {
-    let btns = document.querySelectorAll(".opt-btn");
-    btns.forEach(b => b.disabled = true);
-    if(idx === correct) { btn.classList.add("correct"); correctCount++; }
-    else { btn.classList.add("wrong"); btns[correct].classList.add("correct"); wrongCount++; }
-    updateStats();
-    document.getElementById("next-btn").style.display = "block";
-}
-
-function updateStats() {
-    document.getElementById("count-correct").innerText = correctCount;
-    document.getElementById("count-wrong").innerText = wrongCount;
-}
-
-function nextQuestion() {
-    currentIdx++;
-    if(currentIdx < gameQs.length) showQuestion();
-    else endGame();
-}
-
-function endGame() {
-    document.getElementById("quiz-screen").classList.add("hidden");
-    document.getElementById("result-screen").classList.remove("hidden");
-    document.getElementById("stats-area").style.visibility = "hidden";
-    document.getElementById("final-correct").innerText = correctCount;
-    document.getElementById("total-q").innerText = gameQs.length;
-    let ratio = correctCount / gameQs.length;
-    document.getElementById("feedback-msg").innerText = ratio >= 0.8 ? "Mükemmel!" : "Daha çok çalışmalısın.";
-}
-
-function toggleTheme() { document.body.classList.toggle("dark-mode"); }
+    function goBackToMenu() {
+        if (confirm("Testten çıkmak istiyor musun?")) {
+            showScreen('screen-menu');
+        }
+    }
 </script>
+
 </body>
 </html>
