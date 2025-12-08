@@ -39,9 +39,21 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.3s; }
-        body { background-color: var(--bg-color); color: var(--text-color); height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; perspective: 1500px; }
+        
+        /* SCROLL FIX: overflow-y: auto yapıldı, artık aşağı inilebilir */
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            overflow-y: auto; /* DİKEY KAYDIRMA AÇILDI */
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            perspective: 1500px; 
+        }
 
-        /* INTRO */
+        /* INTRO OVERLAY */
         #intro-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 9999; 
@@ -92,9 +104,9 @@
         }
         .start-btn:hover { transform: translateY(-2px) scale(1.02); opacity: 0.95; box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4); }
 
-        /* MAIN */
-        #screen-main { display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background-color: var(--bg-color); }
-        .main-wrapper { display: grid; grid-template-columns: 1.2fr 1fr; width: 90%; max-width: 1600px; height: 90vh; gap: 60px; opacity: 0; transition: opacity 1s ease; }
+        /* MAIN SCREEN - SCROLLABLE */
+        #screen-main { display: none; width: 100%; min-height: 100vh; align-items: center; justify-content: center; background-color: var(--bg-color); padding: 50px 0; }
+        .main-wrapper { display: grid; grid-template-columns: 1.2fr 1fr; width: 90%; max-width: 1600px; gap: 60px; opacity: 0; transition: opacity 1s ease; }
         .left-panel { display: flex; flex-direction: column; justify-content: center; padding-left: 20px; }
         .welcome-header { font-size: 5rem; font-weight: 800; line-height: 1; letter-spacing: -3px; margin-bottom: 20px; background: linear-gradient(to right, var(--text-color) 20%, var(--accent-primary) 40%, var(--accent-secondary) 60%, var(--text-color) 80%); background-size: 200% auto; color: var(--text-color); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 4s linear infinite; }
         @keyframes shine { to { background-position: 200% center; } }
@@ -127,7 +139,7 @@
         @keyframes global-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
 
         /* QUIZ */
-        #screen-quiz, #screen-result { display: none; width: 100%; height: 100%; background-color: var(--bg-color); position: absolute; top:0; left:0; z-index: 30; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        #screen-quiz, #screen-result { display: none; width: 100%; min-height: 100vh; background-color: var(--bg-color); position: absolute; top:0; left:0; z-index: 30; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
         .quiz-box { width: 90%; max-width: 650px; text-align: left; background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--card-border); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.2); }
         .quiz-header-btn { display: flex; align-items: center; color: var(--text-sub); cursor: pointer; font-weight: 600; font-size: 0.9rem; margin-bottom: 20px; transition: 0.2s; width: fit-content; }
         .quiz-header-btn:hover { color: var(--text-color); transform: translateX(-3px); }
@@ -148,7 +160,16 @@
         body.light-mode .fa-sun { color: #fff; }
         body.light-mode .fa-moon { color: var(--text-sub); }
 
-        @media (max-width: 1000px) { .main-wrapper { grid-template-columns: 1fr; height: auto; display: flex; flex-direction: column-reverse; padding-bottom: 50px; overflow-y: scroll; } .right-panel { height: 400px; margin-bottom: 20px; } .atom-system { transform: scale(0.7); } .header-content h1 { font-size: 3.5rem; } .login-inner-box, .quiz-box { padding: 40px 30px; } }
+        /* MOBİL DÜZENLEMELERİ (Önemli) */
+        @media (max-width: 1000px) { 
+            .main-wrapper { grid-template-columns: 1fr; height: auto; display: flex; flex-direction: column-reverse; padding-bottom: 50px; } 
+            .right-panel { height: 400px; margin-bottom: 20px; } 
+            .atom-system { transform: scale(0.7); } 
+            .header-content h1 { font-size: 3.5rem; } 
+            .login-inner-box, .quiz-box { padding: 40px 30px; } 
+            /* Mobilde kaydırma serbest */
+            body { overflow-y: auto !important; height: auto !important; }
+        }
     </style>
 </head>
 <body>
@@ -202,7 +223,17 @@
 <script>
 const phrases = ["Speakout Ultra", "Design by 0x", "Ready when you are..."];
 let step=0, timer;
-window.onload=runIntro;
+
+// TELEFONDA INTRO'YU ATLA (Mobilde direkt giriş ekranı gelir)
+window.onload = function() {
+    if(window.innerWidth < 1000) {
+        document.getElementById('intro-overlay').style.display = 'none';
+        document.getElementById('screen-login').style.display = 'flex';
+    } else {
+        runIntro();
+    }
+};
+
 function runIntro(){const el=document.getElementById('intro-text');if(step>=phrases.length){finishIntro();return;}el.innerText=phrases[step];el.style.animation='none';void el.offsetWidth;
 el.style.animation='cinematic 1.2s forwards';step++;
 timer=setTimeout(runIntro,1500);}
@@ -642,22 +673,28 @@ const quizData = {
         document.getElementById('q-total').innerText=currentQuestions.length;
         document.getElementById('question-text').innerText=q.q;
         let c=document.getElementById('options-container'); c.innerHTML="";
-        document.getElementById('next-btn').style.visibility='hidden';
-        document.getElementById('next-btn').style.opacity='0';
+        
+        // BUTONU GİZLE
+        let btn = document.getElementById('next-btn');
+        btn.style.visibility='hidden';
+        btn.style.opacity='0';
         
         q.o.forEach((opt,i)=>{
             let d=document.createElement('div'); d.className='q-opt'; d.innerText=opt;
             d.onclick=()=>{
+                // DOĞRU/YANLIŞ KONTROLÜ VE RENKLENDİRME
                 if(i===q.a){
                     d.classList.add('correct'); 
                     score++; 
                     document.getElementById('score').innerText=score;
                 } else {
                     d.classList.add('wrong'); 
+                    // YANLIŞ YAPINCA DOĞRUYU DA YEŞİL YAP
                     c.children[q.a].classList.add('correct'); 
                 }
+                
+                // TIKLAMAYI ENGELLE VE BUTONU GÖSTER
                 document.querySelectorAll('.q-opt').forEach(x=>x.style.pointerEvents='none');
-                let btn = document.getElementById('next-btn');
                 btn.style.visibility='visible';
                 btn.style.opacity='1';
             };
