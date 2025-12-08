@@ -40,42 +40,25 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.3s; }
         
-        /* SCROLL FIX: overflow-y: auto yapıldı, artık aşağı inilebilir */
+        /* SCROLL AYARI */
         body { 
             background-color: var(--bg-color); 
             color: var(--text-color); 
             min-height: 100vh; 
             overflow-x: hidden; 
-            overflow-y: auto; /* DİKEY KAYDIRMA AÇILDI */
+            overflow-y: auto; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            perspective: 1500px; 
+            perspective: 1500px;
+            -webkit-tap-highlight-color: transparent; /* Mobilde tıklama efektini temizle */
         }
 
-        /* INTRO OVERLAY */
-        #intro-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 9999; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            transition: opacity 0.8s ease; 
-        }
+        /* INTRO */
+        #intro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.8s ease; }
         .intro-text { font-size: 3.5rem; font-weight: 800; letter-spacing: -1px; background: linear-gradient(to right, #fff, #666); -webkit-background-clip: text; -webkit-text-fill-color: transparent; opacity: 0; transform: scale(0.9); text-align: center; padding: 20px; }
         
-        .skip-btn { 
-            position: absolute; bottom: 50px; 
-            padding: 10px 25px; 
-            border: 1px solid rgba(255,255,255,0.3); 
-            border-radius: 30px; 
-            background: transparent; 
-            color: #888; 
-            cursor: pointer; 
-            text-transform: uppercase; 
-            font-size: 0.8rem; 
-            letter-spacing: 2px; 
-            transition: 0.3s; 
-            z-index: 10000;
-        }
+        .skip-btn { position: absolute; bottom: 50px; padding: 10px 25px; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; background: transparent; color: #888; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; transition: 0.3s; z-index: 10000; }
         .skip-btn:hover { color: #fff; border-color: #fff; background: rgba(255,255,255,0.1); }
         
         @keyframes cinematic { 0% { opacity: 0; filter: blur(20px); transform: scale(0.9); } 20% { opacity: 1; filter: blur(0px); transform: scale(1); } 80% { opacity: 1; filter: blur(0px); transform: scale(1); } 100% { opacity: 0; filter: blur(20px); transform: scale(1.1); } }
@@ -89,33 +72,51 @@
         .input-area { background-color: var(--input-bg); border: 1px solid var(--input-border); border-radius: 16px; padding: 18px; width: 100%; max-width: 350px; margin: 0 auto 30px auto; transition: border-color 0.3s; }
         .input-area:focus-within { border-color: var(--accent-primary); }
         .login-input { width: 100%; background: transparent; border: none; color: var(--text-color); font-size: 1.1rem; text-align: center; outline: none; }
-        
-        .start-btn { 
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); 
-            color: var(--btn-text); 
-            font-weight: 800; 
-            padding: 16px 60px; 
-            border-radius: 50px; 
-            border: none; 
-            font-size: 1.1rem; 
-            cursor: pointer; 
-            transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s; 
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); 
-        }
+        .start-btn { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); color: var(--btn-text); font-weight: 800; padding: 16px 60px; border-radius: 50px; border: none; font-size: 1.1rem; cursor: pointer; transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); }
         .start-btn:hover { transform: translateY(-2px) scale(1.02); opacity: 0.95; box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4); }
 
-        /* MAIN SCREEN - SCROLLABLE */
+        /* MAIN SCREEN */
         #screen-main { display: none; width: 100%; min-height: 100vh; align-items: center; justify-content: center; background-color: var(--bg-color); padding: 50px 0; }
         .main-wrapper { display: grid; grid-template-columns: 1.2fr 1fr; width: 90%; max-width: 1600px; gap: 60px; opacity: 0; transition: opacity 1s ease; }
         .left-panel { display: flex; flex-direction: column; justify-content: center; padding-left: 20px; }
-        .welcome-header { font-size: 5rem; font-weight: 800; line-height: 1; letter-spacing: -3px; margin-bottom: 20px; background: linear-gradient(to right, var(--text-color) 20%, var(--accent-primary) 40%, var(--accent-secondary) 60%, var(--text-color) 80%); background-size: 200% auto; color: var(--text-color); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 4s linear infinite; }
+        
+        .welcome-header { 
+            font-size: 5rem; 
+            font-weight: 800; 
+            line-height: 1; 
+            letter-spacing: -3px; 
+            margin-bottom: 20px; 
+            background: linear-gradient(to right, var(--text-color) 20%, var(--accent-primary) 40%, var(--accent-secondary) 60%, var(--text-color) 80%); 
+            background-size: 200% auto; 
+            color: var(--text-color); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            animation: shine 4s linear infinite; 
+        }
         @keyframes shine { to { background-position: 200% center; } }
+        
         .header-content p { font-size: 1.2rem; color: var(--text-sub); margin-bottom: 50px; max-width: 500px; line-height: 1.6; }
         .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .xp-card { background-color: var(--card-bg); border-radius: 24px; padding: 30px; position: relative; overflow: hidden; cursor: pointer; border: 1px solid var(--card-border); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); min-height: 200px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        
+        .xp-card { 
+            background-color: var(--card-bg); 
+            border-radius: 24px; 
+            padding: 30px; 
+            position: relative; 
+            overflow: hidden; 
+            cursor: pointer; 
+            border: 1px solid var(--card-border); 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            min-height: 200px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
+        }
         .xp-card::before { content: ''; position: absolute; width: 180px; height: 180px; background: radial-gradient(circle, var(--accent-color), transparent 70%); border-radius: 50%; top: -40px; right: -40px; opacity: 0.1; filter: blur(50px); transition: 0.5s; }
         .xp-card:hover { transform: translateY(-8px); border-color: var(--accent-color); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
         .xp-card:hover::before { opacity: 0.4; transform: scale(1.2); }
+        
         .c1 { --accent-color: #a855f7; } .c2 { --accent-color: #ec4899; } .c3 { --accent-color: #14b8a6; } .c4 { --accent-color: #f97316; }
         .tag-pill { background: rgba(255,255,255,0.08); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; width: fit-content; margin-bottom: 10px; color: var(--accent-color); border: 1px solid rgba(255,255,255,0.05); position: relative; z-index: 2; letter-spacing: 1px; }
         body.light-mode .tag-pill { background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); }
@@ -140,7 +141,7 @@
 
         /* QUIZ */
         #screen-quiz, #screen-result { display: none; width: 100%; min-height: 100vh; background-color: var(--bg-color); position: absolute; top:0; left:0; z-index: 30; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
-        .quiz-box { width: 90%; max-width: 650px; text-align: left; background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--card-border); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.2); }
+        .quiz-box { width: 90%; max-width: 650px; text-align: left; background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--card-border); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.2); margin-bottom: 80px; }
         .quiz-header-btn { display: flex; align-items: center; color: var(--text-sub); cursor: pointer; font-weight: 600; font-size: 0.9rem; margin-bottom: 20px; transition: 0.2s; width: fit-content; }
         .quiz-header-btn:hover { color: var(--text-color); transform: translateX(-3px); }
         .quiz-header-btn i { margin-right: 8px; font-size: 1rem; }
@@ -150,7 +151,6 @@
         .correct { background: rgba(20, 241, 149, 0.1) !important; border-color: #14b8a6 !important; color: #14b8a6 !important; }
         .wrong { background: rgba(239, 68, 68, 0.1) !important; border-color: #ef4444 !important; color: #ef4444 !important; }
 
-        /* THEME TOGGLE */
         .theme-toggle-btn { position: fixed; top: 20px; right: 20px; z-index: 10001; background: var(--toggle-bg); border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; padding: 5px; border-radius: 30px; cursor: pointer; width: 70px; height: 34px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .toggle-icon { font-size: 1rem; z-index: 2; transition: color 0.3s; width: 24px; text-align: center; }
         .fa-sun { color: var(--text-sub); }
@@ -160,14 +160,35 @@
         body.light-mode .fa-sun { color: #fff; }
         body.light-mode .fa-moon { color: var(--text-sub); }
 
-        /* MOBİL DÜZENLEMELERİ (Önemli) */
+        /* MOBİL DÜZENLEMELERİ (FİNAL) */
         @media (max-width: 1000px) { 
-            .main-wrapper { grid-template-columns: 1fr; height: auto; display: flex; flex-direction: column-reverse; padding-bottom: 50px; } 
-            .right-panel { height: 400px; margin-bottom: 20px; } 
-            .atom-system { transform: scale(0.7); } 
-            .header-content h1 { font-size: 3.5rem; } 
-            .login-inner-box, .quiz-box { padding: 40px 30px; } 
-            /* Mobilde kaydırma serbest */
+            .main-wrapper { 
+                grid-template-columns: 1fr; 
+                height: auto; 
+                display: flex; 
+                flex-direction: column-reverse; 
+                padding-bottom: 80px; 
+            } 
+            .left-panel { padding-left: 0; }
+            .grid-cards { gap: 15px; } /* Kart aralığını azalttık */
+            .xp-card { 
+                padding: 20px; /* İç boşluğu azalttık */
+                min-height: auto; /* Zorunlu yüksekliği kaldırdık */
+            }
+            .card-title { font-size: 1.4rem; } /* Başlıkları küçülttük */
+            .card-desc { font-size: 0.9rem; }
+            
+            .right-panel { height: 350px; margin-bottom: 10px; } 
+            .atom-system { transform: scale(0.65); } 
+            
+            .welcome-header { font-size: 3rem; letter-spacing: -1px; text-align: center; } /* Başlığı küçülttük */
+            .header-content p { text-align: center; font-size: 1rem; margin-bottom: 30px; }
+            
+            .login-inner-box, .quiz-box { padding: 30px 20px; } 
+            
+            /* Mobilde Next butonu için ekstra boşluk */
+            #screen-quiz { padding-bottom: 100px; justify-content: flex-start; padding-top: 80px; }
+            
             body { overflow-y: auto !important; height: auto !important; }
         }
     </style>
@@ -224,7 +245,7 @@
 const phrases = ["Speakout Ultra", "Design by 0x", "Ready when you are..."];
 let step=0, timer;
 
-// TELEFONDA INTRO'YU ATLA (Mobilde direkt giriş ekranı gelir)
+// TELEFONDA INTRO'YU ATLA (Mobilde direkt giriş ekranı gelir, scroll sorunu yaşanmaz)
 window.onload = function() {
     if(window.innerWidth < 1000) {
         document.getElementById('intro-overlay').style.display = 'none';
