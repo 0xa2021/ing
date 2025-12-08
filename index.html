@@ -42,11 +42,28 @@
         body { background-color: var(--bg-color); color: var(--text-color); height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; perspective: 1500px; }
 
         /* INTRO */
-        #intro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.8s ease; }
+        #intro-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 9999; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            transition: opacity 0.8s ease; 
+        }
         .intro-text { font-size: 3.5rem; font-weight: 800; letter-spacing: -1px; background: linear-gradient(to right, #fff, #666); -webkit-background-clip: text; -webkit-text-fill-color: transparent; opacity: 0; transform: scale(0.9); text-align: center; padding: 20px; }
         
-        /* SKIP BUTTON - ORIGINAL STABLE VERSION */
-        .skip-btn { position: absolute; bottom: 50px; padding: 10px 25px; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; background: transparent; color: #888; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; transition: 0.3s; z-index: 10000; }
+        .skip-btn { 
+            position: absolute; bottom: 50px; 
+            padding: 10px 25px; 
+            border: 1px solid rgba(255,255,255,0.3); 
+            border-radius: 30px; 
+            background: transparent; 
+            color: #888; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            font-size: 0.8rem; 
+            letter-spacing: 2px; 
+            transition: 0.3s; 
+            z-index: 10000;
+        }
         .skip-btn:hover { color: #fff; border-color: #fff; background: rgba(255,255,255,0.1); }
         
         @keyframes cinematic { 0% { opacity: 0; filter: blur(20px); transform: scale(0.9); } 20% { opacity: 1; filter: blur(0px); transform: scale(1); } 80% { opacity: 1; filter: blur(0px); transform: scale(1); } 100% { opacity: 0; filter: blur(20px); transform: scale(1.1); } }
@@ -60,7 +77,19 @@
         .input-area { background-color: var(--input-bg); border: 1px solid var(--input-border); border-radius: 16px; padding: 18px; width: 100%; max-width: 350px; margin: 0 auto 30px auto; transition: border-color 0.3s; }
         .input-area:focus-within { border-color: var(--accent-primary); }
         .login-input { width: 100%; background: transparent; border: none; color: var(--text-color); font-size: 1.1rem; text-align: center; outline: none; }
-        .start-btn { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); color: var(--btn-text); font-weight: 800; padding: 16px 60px; border-radius: 50px; border: none; font-size: 1.1rem; cursor: pointer; transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); }
+        
+        .start-btn { 
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); 
+            color: var(--btn-text); 
+            font-weight: 800; 
+            padding: 16px 60px; 
+            border-radius: 50px; 
+            border: none; 
+            font-size: 1.1rem; 
+            cursor: pointer; 
+            transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s; 
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); 
+        }
         .start-btn:hover { transform: translateY(-2px) scale(1.02); opacity: 0.95; box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4); }
 
         /* MAIN */
@@ -164,7 +193,7 @@
             <div style="display:flex; justify-content:space-between; margin-bottom:20px; color:var(--text-sub);"><span>SORU <span id="q-idx">1</span>/<span id="q-total">0</span></span><span>SKOR: <span id="score">0</span></span></div>
             <div id="question-text" class="q-text">Soru Yükleniyor...</div>
             <div id="options-container"></div>
-            <button id="next-btn" class="start-btn" style="width:100%; margin-top:30px; display:none;" onclick="nextQuestion()">SONRAKİ ➜</button>
+            <button id="next-btn" class="start-btn" style="width:100%; margin-top:30px; visibility:hidden; opacity:0; transition:opacity 0.3s;" onclick="nextQuestion()">NEXT ➜</button>
         </div>
     </div>
     
@@ -613,17 +642,27 @@ const quizData = {
         document.getElementById('q-total').innerText=currentQuestions.length;
         document.getElementById('question-text').innerText=q.q;
         let c=document.getElementById('options-container'); c.innerHTML="";
+        document.getElementById('next-btn').style.visibility='hidden';
+        document.getElementById('next-btn').style.opacity='0';
+        
         q.o.forEach((opt,i)=>{
             let d=document.createElement('div'); d.className='q-opt'; d.innerText=opt;
             d.onclick=()=>{
-                if(i===q.a){d.classList.add('correct'); score++; document.getElementById('score').innerText=score;}
-                else{d.classList.add('wrong');}
+                if(i===q.a){
+                    d.classList.add('correct'); 
+                    score++; 
+                    document.getElementById('score').innerText=score;
+                } else {
+                    d.classList.add('wrong'); 
+                    c.children[q.a].classList.add('correct'); 
+                }
                 document.querySelectorAll('.q-opt').forEach(x=>x.style.pointerEvents='none');
-                document.getElementById('next-btn').style.display='inline-block';
+                let btn = document.getElementById('next-btn');
+                btn.style.visibility='visible';
+                btn.style.opacity='1';
             };
             c.appendChild(d);
         });
-        document.getElementById('next-btn').style.display='none';
     }
 
     function nextQuestion(){
